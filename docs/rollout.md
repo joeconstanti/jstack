@@ -77,3 +77,25 @@ and `update-skills`. Existing deploy exclusions (`.agents/**`, `.claude/**`, and
 the other provider folders) already keep them out of FTP and rsync uploads.
 project.json files were kept. The installations remain uncommitted local
 changes; nothing was pushed or deployed, and no agent was reloaded.
+
+## Update to 0.3.0 — 30 October 2026
+
+The six projects were updated in place from the `v0.3.0` checkout with
+`install.py`. Each dry run showed 29 writes (rules.md, seven changed skills and
+their Cursor, Gemini and OpenCode adapters) and no collisions or modified
+managed files.
+
+| Website | Project folder | Managed paths | Integrity check | Doctor | Other Git state |
+|---------|----------------|---------------|-----------------|--------|-----------------|
+| fromtheroot.studio | fromtheroot-web | 94 | Passed | Passed | Unchanged |
+| automatedigital.ai | automate | 94 | Passed | Passed | Unchanged |
+| syntheticlabs.xyz | syntheticlabs | 72 | Passed | Passed | Unchanged |
+| madebyjoe.co | madebyjoe | 94 | Passed | Passed | Unchanged |
+| joe.graphics | joegraphics | 94 | Passed | Passed | Unchanged |
+| glasspane.xyz | glasspane | 61 | Passed | Passed | Unchanged |
+
+"Unchanged" means `git status --porcelain -uall`, without the agent and jstack
+paths, was the same before and after. joe.graphics tracks its jstack files, so
+it shows 30 modified managed paths; the other projects still hold jstack as
+untracked files. Nothing in the target projects was committed, pushed or
+deployed, and no agent was reloaded.
