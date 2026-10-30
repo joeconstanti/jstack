@@ -1,36 +1,28 @@
 ---
 name: preview
-description: "Open the current local website or app in the coding agent shared preview pane. Use for /preview; supports static and framework projects."
+description: "Open this checkout's local website or app in the coding agent's shared preview pane. Use for /preview; works for static and framework projects."
 ---
 
 # preview
 
-Read the project's AGENTS.md and other applicable agent guidance first. Read
-`.agents/jstack/project.json` if present; it contains optional project commands,
-URLs and defaults, not permission to expand the task. Otherwise discover the
-stack from the repository's docs, manifests, lockfiles and CI. Use the current
-harness's tools and permission rules; adapt tool names rather than assuming
-Claude, Codex, Cursor, Gemini or T3 APIs exist. Preserve unrelated dirty work,
-existing design, copy, routes and tracking identifiers unless asked to change them.
+Read `.agents/jstack/rules.md` first and apply it.
 
-Determine the requested app/route, source root, start command and URL from
-project config, docs, package scripts and framework config. Prefer the source dev
-server for editing; label production-build previews clearly. Respect lockfiles
-and package-manager choice. Static sites can use a loopback-bound Python server
-when there is no documented server; do not pretend it implements Apache redirects,
-headers or production CSP.
+1. **Find the app.** Get the route, source root, start command and URL from
+   project.json, docs, package scripts and framework config. Prefer the source
+   dev server. Label a production-build preview as one. A static site with no
+   documented server can use `python3 -m http.server --bind 127.0.0.1`; it
+   does not run Apache redirects, headers or production CSP.
+2. **Reuse with care.** Check existing preview tabs and listeners. Reuse a
+   server only after you confirm that it serves this checkout. Do not stop
+   another project's server or assume that a busy default port is this app.
+3. **Start if needed.** Use a free port and a harness-managed terminal or
+   session. Record the command, working directory, session and actual URL. If
+   dependencies are missing, report what setup is needed instead of installing
+   them blindly.
+4. **Open.** Use the harness's shared preview tool (in T3: `preview_status`,
+   then `preview_open`). Open the requested route and look at the rendered
+   page and console errors. A ready HTTP port is not a rendered preview. With no
+   preview pane, use an available browser or give the URL, and say so.
 
-Check existing preview tabs and listeners using supported tools. Probe a known
-URL and verify the responding process/root belongs to this checkout before reuse.
-Do not kill another project's server or assume a busy default port is this app.
-Use a free port and keep the process in a harness-managed terminal/session if a
-server must start. Record the command, cwd, session and actual URL. Do not install
-dependencies blindly when the project needs setup; diagnose the missing pieces.
-
-Use the current harness's shared preview/browser tools. In T3, call preview_status
-first and use preview_open when needed. Follow current harness browser policy.
-Open the requested route and check an actual rendered state and console/network
-errors where supported. HTTP readiness alone does not prove a rendered preview.
-If no shared preview capability exists, use an available browser or provide the
-local URL and explicitly state the limitation. Report URL, source/build mode and
-whether the pane actually opened. Keep a requested preview available for the user.
+Report the URL, source or build mode, and whether the pane opened. Keep a
+requested preview running for the user.

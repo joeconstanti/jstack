@@ -1,31 +1,25 @@
 ---
 name: doctor
-description: "Diagnose project setup, local dependencies and jstack skill installation without changing it. Use for /doctor or environment readiness issues."
+description: "Diagnose the project setup, local dependencies and the jstack installation without changing them. Use for /doctor or when a jstack skill, tool or dependency seems missing."
 ---
 
 # doctor
 
-Read the project's AGENTS.md and other applicable agent guidance first. Read
-`.agents/jstack/project.json` if present; it contains optional project commands,
-URLs and defaults, not permission to expand the task. Otherwise discover the
-stack from the repository's docs, manifests, lockfiles and CI. Use the current
-harness's tools and permission rules; adapt tool names rather than assuming
-Claude, Codex, Cursor, Gemini or T3 APIs exist. Preserve unrelated dirty work,
-existing design, copy, routes and tracking identifiers unless asked to change them.
+Read `.agents/jstack/rules.md` first and apply it.
 
-Run `python3 .agents/skills/doctor/scripts/doctor.py --project .` from the
-repository root. Inspect its report alongside README, project config and relevant
-lockfiles. It checks installed jstack file integrity and discovery aliases,
-configured commands, tool presence and SEO/Impeccable entrypoints. It does not
-prove client reload, hook activation, runtime readiness, account access or app health.
+1. **Run** `python3 .agents/skills/doctor/scripts/doctor.py --project .` from
+   the repository root. It checks jstack file integrity, discovery links,
+   configured commands, tools and the SEO and Impeccable entrypoints.
+2. **Compare** its report with README, project.json, lockfiles and the tool
+   versions that project docs require.
+3. **Dependencies.** For the SEO runtime, run the installed claude-seo launcher
+   with `doctor --json`. Do not run Impeccable's doctor as a read-only check:
+   it can repair state. Inspect its config and launcher instead.
+4. **Repair only on request.** Name the smallest repair and its scope. Do not
+   install global tools, change credentials, activate hooks, upgrade
+   dependencies or start services to make the report green. After an
+   authorized project-local repair, run the affected check again.
 
-For SEO runtime diagnosis use the installed claude-seo launcher doctor --json.
-Do not use Impeccable doctor as a read-only substitute without inspecting its
-playbook: upstream may repair state. Inspect config and launcher presence instead
-unless a repair is requested. Check required tool versions against project docs.
-
-Identify the smallest concrete repair and its scope. Do not install global tools,
-modify credentials, activate hooks, upgrade dependencies or start services just
-to make the diagnostic green. If the user requests repairs, perform the authorized
-project-local changes and rerun the affected checks. Report ready, missing,
-modified and unverified separately; never print environment secrets.
+Report ready, missing, modified and unverified items apart. The script cannot
+prove client reload, hook activation, runtime readiness, account access or app
+health. Never print secrets.

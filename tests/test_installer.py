@@ -37,6 +37,7 @@ class InstallerTests(unittest.TestCase):
         self.run_installer()
         for provider in ['.agents', '.claude', '.cursor', '.gemini', '.opencode']:
             self.assertTrue((self.root / provider / 'skills/pull/SKILL.md').is_file())
+        self.assertEqual((self.root / '.agents/jstack/rules.md').read_bytes(), (SOURCE / 'shared/rules.md').read_bytes())
         config = self.root / '.agents/jstack/project.json'
         config.write_text('{"site_url":"https://example.com"}\n')
         manifest_before = (self.root / '.agents/jstack/manifest.json').read_bytes()
@@ -114,7 +115,7 @@ class InstallerTests(unittest.TestCase):
         for command in (self.root / '.gemini/commands').glob('*.toml'):
             data = tomllib.loads(command.read_text())
             self.assertIn('{{args}}', data['prompt'])
-            self.assertIn("project's AGENTS.md", data['prompt'])
+            self.assertIn('.agents/jstack/rules.md', data['prompt'])
 
     def test_uninstalled_check_fails(self):
         self.run_installer('check', ok=False)
@@ -163,6 +164,14 @@ class InstallerTests(unittest.TestCase):
             description = next(line for line in frontmatter.splitlines() if line.startswith('description: '))
             self.assertGreater(len(json.loads(description.removeprefix('description: '))), 20)
             self.assertNotIn('[TODO', text)
+            # Shared rules live once in rules.md; each skill points there and stays short.
+            self.assertIn('Read `.agents/jstack/rules.md` first', text)
+            self.assertLessEqual(len(text.splitlines()), 60, name)
+            # Publishing and self-update fire only when typed, in Claude/Cursor and Codex alike.
+            typed_only = 'disable-model-invocation: true' in frontmatter
+            policy = SOURCE / 'skills' / name / 'agents/openai.yaml'
+            self.assertEqual(typed_only, name in {'push', 'update-skills'}, name)
+            self.assertEqual(typed_only, policy.is_file() and 'allow_implicit_invocation: false' in policy.read_text(), name)
 
 
 if __name__ == '__main__':

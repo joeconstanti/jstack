@@ -1,28 +1,25 @@
 ---
 name: pull
-description: "Bring the latest main branch into the current checkout without losing local work. Use for /pull or updating a working branch from main."
+description: "Bring the latest main branch into the current checkout without losing local work. Use for /pull or to update a working branch from main."
 ---
 
 # pull
 
-Read the project's AGENTS.md and other applicable agent guidance first. Read
-`.agents/jstack/project.json` if present; it contains optional project commands,
-URLs and defaults, not permission to expand the task. Otherwise discover the
-stack from the repository's docs, manifests, lockfiles and CI. Use the current
-harness's tools and permission rules; adapt tool names rather than assuming
-Claude, Codex, Cursor, Gemini or T3 APIs exist. Preserve unrelated dirty work,
-existing design, copy, routes and tracking identifiers unless asked to change them.
+Read `.agents/jstack/rules.md` first and apply it.
 
-Inspect status, current branch, upstream and remotes. Determine the main branch
-from project config or the remote default; prefer the configured remote, otherwise
-`origin`. Fetch that remote. Do not reset, clean, auto-stash or change branches
-with unrelated work. If uncommitted files could be affected, stop before merging
-and explain which files need handling.
+1. **Inspect** status, current branch, upstream and remotes. Get the main branch
+   from project.json or the remote default, and the remote from project.json or
+   `origin`. Fetch it.
+2. **Protect local work.** Do not reset, clean, auto-stash or switch branches.
+   If the incoming changes touch uncommitted files, stop and name those files.
+3. **Integrate.**
+   - On main: `git merge --ff-only <remote>/<main>`. If main diverged, report
+     the divergence instead of inventing a resolution.
+   - On a topic branch: merge the fetched main into it and keep published
+     history. Rebase only when the project convention says so and the branch is
+     not shared.
+4. **Conflicts.** Keep both sides' intent. Resolve a conflict only when the
+   intent is clear. Otherwise list the files that need a decision.
 
-On main, fast-forward only (`git merge --ff-only <remote>/<main>`). On a topic
-branch, merge the fetched main into the topic branch, retaining published history;
-follow an explicit project rebase convention only when compatible with the user's
-instructions. Inspect divergence first. If main has diverged, report it rather
-than inventing a resolution. On conflicts, preserve both sides; resolve only when
-intent is clear, otherwise identify the files needing a decision. Never push as
-part of pull. Report branch, resulting SHA and merge/fast-forward state.
+Never push. Report the branch, the resulting SHA and whether it was a
+fast-forward, a merge or blocked.

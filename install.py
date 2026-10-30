@@ -70,6 +70,8 @@ def plan(root):
             desired[relative] = file_entry(source.read_bytes(), bool(source.stat().st_mode & 0o111))
     desired['.agents/jstack/.gitignore'] = file_entry(b'runtime/\nreports/\n')
     desired['.agents/jstack/LICENSE'] = file_entry((SOURCE / 'LICENSE').read_bytes())
+    # Every skill points here, so shared rules live in one place.
+    desired['.agents/jstack/rules.md'] = file_entry((SOURCE / 'shared/rules.md').read_bytes())
     for skill in sorted((SOURCE / 'skills').iterdir()):
         if not (skill / 'SKILL.md').is_file():
             continue

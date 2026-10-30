@@ -14,10 +14,12 @@ def diagnose(root):
               'problems': [], 'unverified': ['agent reload/discovery', 'hook activation', 'SEO runtime dependencies',
                                                'authenticated accounts', 'rendered app and deployment']}
     manifest_path = root / '.agents/jstack/manifest.json'
+    manifest_files = {}
     if not manifest_path.is_file():
         result['problems'].append('jstack manifest missing')
     else:
         manifest = json.loads(manifest_path.read_text())
+        manifest_files = manifest.get('files', {})
         result['version'] = manifest.get('version')
         result['managed_paths'] = len(manifest.get('files', {}))
         for relative, expected in manifest.get('files', {}).items():
@@ -42,9 +44,11 @@ def diagnose(root):
     result['seo'] = next((name for name in ['.agents/skills/seo/SKILL.md', '.agents/skills/claude-seo/skills/seo/SKILL.md'] if (root / name).is_file()), None)
     result['impeccable'] = (root / '.agents/skills/impeccable/SKILL.md').is_file()
     result['impeccable_launcher'] = (root / '.agents/skills/impeccable/scripts/impeccable').is_file()
+    # Installed skill names come from the manifest, so new releases need no edit here.
+    skills = sorted({Path(p).parts[2] for p in manifest_files if p.startswith('.agents/skills/') and p.endswith('/SKILL.md')})
     result['discovery_files'] = {}
     for provider in ['.agents', '.claude', '.cursor', '.gemini', '.opencode']:
-        result['discovery_files'][provider] = all((root / provider / 'skills' / name / 'SKILL.md').is_file() for name in ['pull', 'audit', 'edit', 'preview', 'pr', 'push', 'check', 'review', 'verify', 'doctor', 'update-skills'])
+        result['discovery_files'][provider] = bool(skills) and all((root / provider / 'skills' / name / 'SKILL.md').is_file() for name in skills)
     if not result['seo']:
         result['problems'].append('audit dependency missing: Claude SEO')
     if not result['impeccable'] or not result['impeccable_launcher']:

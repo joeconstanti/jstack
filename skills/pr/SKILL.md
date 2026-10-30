@@ -1,38 +1,51 @@
 ---
 name: pr
-description: "Create a named topic branch, commit scoped changes, push and open a detailed GitHub pull request. Use for /pr; does not merge or deploy."
+description: "Open a pull request: topic branch, scoped commit, push and a problem-first description. Use for /pr, \"open a PR\" or \"file a PR\"; babysits it when asked and never merges."
 ---
 
 # pr
 
-Read the project's AGENTS.md and other applicable agent guidance first. Read
-`.agents/jstack/project.json` if present; it contains optional project commands,
-URLs and defaults, not permission to expand the task. Otherwise discover the
-stack from the repository's docs, manifests, lockfiles and CI. Use the current
-harness's tools and permission rules; adapt tool names rather than assuming
-Claude, Codex, Cursor, Gemini or T3 APIs exist. Preserve unrelated dirty work,
-existing design, copy, routes and tracking identifiers unless asked to change them.
+Read `.agents/jstack/rules.md` first and apply it.
 
-Inspect status, staged/unstaged diffs, branch, remotes and project conventions.
-Identify the changes belonging to this request; never sweep in unrelated work or
-stage everything. Exclude secrets, downloaded runtimes and live instrumentation.
-Use an existing appropriate topic branch, or create a descriptive branch using
-the repo convention (for example `feat/contact-form` or `fix/canonical-urls`).
-Never use a `codex/` prefix. Do not rewrite an existing published branch.
+1. **Scope.** Inspect status, staged and unstaged diffs, branch and remotes.
+   Name the paths that belong to this request. Leave out unrelated work,
+   secrets, downloaded runtimes and live-edit instrumentation. If a PR for this
+   branch exists, update it instead of opening a second one.
+2. **Branch.** On main, create a topic branch in the repo's convention, for
+   example `fix/canonical-urls`. Never use a `codex/` prefix. Never rewrite a
+   published branch.
+3. **Prove.** Fetch the base and review the scoped diff against it. Run the
+   check skill, and the verify skill for UI changes. Fix in-scope failures
+   first. Do not call unproven work ready.
+4. **Commit and push.** Stage explicit paths or hunks; leave unrelated staged
+   work out. Read the staged diff, commit and push with upstream tracking.
+5. **Describe.** Follow the PR template if there is one. The title follows the
+   repo convention and says why the change matters. The body has:
+   - **Problem**, in one or two plain sentences from the user's request, then
+     the fix. No file inventory.
+   - **Evidence**: before and after (screenshot, output, a check that failed
+     and now passes), with the proof rung.
+   - **Risk**: one-way or two-way door, and the blast radius (routes, layout,
+     tracking, SEO, deployment).
+   - The attribution line that the harness requires. Otherwise
+     `Created with <model> in <harness>`, without a guessed model.
 
-Fetch the base branch. Review the scoped diff against it and bring main into the
-topic branch when necessary, preserving unrelated work and published history.
-Run the relevant check workflow; use rendered verification for UI changes when
-supported. Report unavailable/failed checks accurately. If a check fails, fix
-in-scope issues before publishing; don't label unverified changes ready.
+   Check the title and body for secrets and private details. Pass the body
+   with `--body-file`. Open a real PR, not a draft, so review bots run. If the
+   `gh` GraphQL limit is used up, create it with REST
+   (`gh api repos/<owner>/<repo>/pulls`).
+6. **Confirm.** Read back the PR URL, base, head SHA and check state. Link the
+   PR at once if the harness requires it.
 
-Stage explicit paths or hunks. Preserve unrelated pre-staged work without
-including it in this commit. Inspect the staged diff, commit, push with upstream
-tracking, then create or update the PR using available GitHub tools or `gh`.
-Honor a PR template. Lead with the problem and resulting behavior; describe why,
-important implementation choices, actual validation, remaining limitations and
-screenshots when useful. Write multiline bodies via a structured argument or
-`--body-file`. Verify PR URL, base, head SHA and check state. Use harness-required
-PR linking immediately after creation/push. Do not merge, enable auto-merge or
-claim deployment. If GitHub access is unavailable, retain the local work and
-report the exact remaining step. Return the PR link and verification summary.
+## Babysit, only when asked
+
+Use one watcher: the harness PR watcher (T3: `watch_pull_request`), otherwise
+`gh pr checks <number> --watch`. Never write a sleep loop. Act only on checks
+and comments newer than the last push. Check each bot finding against the
+source. Fix real bugs and prove each fix before you push. Decline nits, rare
+edge cases and extra scope with a written reason, and list them as follow-ups.
+Keep the PR at the size the request needs. Start each comment you post for the
+user with a note that an agent wrote it. Stop the watcher before you hand back.
+
+Do not merge, enable auto-merge or claim deployment unless the user asked. If
+GitHub is unavailable, keep the local commit and report the exact next step.

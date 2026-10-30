@@ -1,33 +1,31 @@
 ---
 name: verify
-description: "Verify rendered routes, responsive layouts and key interactions for the scoped web changes. Use for /verify or browser acceptance checks."
+description: "Prove scoped web changes in a real browser: rendered routes, mobile and desktop layouts, key interactions and console errors. Use for /verify or browser acceptance checks."
 ---
 
 # verify
 
-Read the project's AGENTS.md and other applicable agent guidance first. Read
-`.agents/jstack/project.json` if present; it contains optional project commands,
-URLs and defaults, not permission to expand the task. Otherwise discover the
-stack from the repository's docs, manifests, lockfiles and CI. Use the current
-harness's tools and permission rules; adapt tool names rather than assuming
-Claude, Codex, Cursor, Gemini or T3 APIs exist. Preserve unrelated dirty work,
-existing design, copy, routes and tracking identifiers unless asked to change them.
+Read `.agents/jstack/rules.md` first and apply it. The goal is rung 4 (observed), or a clear reason why it was not reached.
 
-Use the preview workflow to identify the correct checkout and app, then inspect
-the routes affected by the change and key shared navigation. Use existing browser
-QA scripts when appropriate and the current harness's permitted browser tools.
-If browser inspection is unavailable, report the missing evidence rather than
-substituting HTTP 200 as a visual pass.
+1. **Target.** Use the preview skill to find this checkout's app. List the
+   routes that the change touches, plus shared navigation, header and footer.
+   Use the project's browser QA scripts when they exist.
+2. **Baseline.** For a visual change, capture the state before the change
+   (main, the live site or a supplied reference) so you compare against
+   something real.
+3. **Drive the real user path** at desktop and narrow mobile widths. Let fonts,
+   images and animations settle. Check the main action, keyboard focus,
+   relevant loading, empty and error states, internal links, and console and
+   network failures. Capture the action and the resulting state, not only the
+   final screen. Check side effects that matter: form payload, tracking event,
+   redirect.
+4. **Stay safe.** Do not submit real leads, send messages, buy or change account
+   data. Use a test path that the project provides.
+5. **Record** the URL, viewport, scenario and result of each check. Save
+   evidence under `.agents/jstack/reports/verify/` or where the user asks. Stop
+   only processes you started, and keep the evidence.
 
-Check representative desktop and narrow mobile widths, loading/empty/error states
-relevant to the change, console/network failures, internal links, keyboard focus
-and the main user action. Let fonts, images and animations settle before comparing
-layout. Compare against supplied references or the unchanged baseline; preserve
-identity and routes. Avoid submitting real leads, sending messages, purchasing or
-changing account data without authorization; use a safe test path when provided.
-
-Record the exact URL, viewport, scenario and observed result; save evidence under
-`.agents/jstack/reports/verify/` or the user's chosen location. Separate source,
-built output, live deployment and authenticated analytics proof. HTTP tracking
-transport is not account attribution. Report failures and gaps; fix only when
-implementation is authorized. Verification itself does not publish or deploy.
+Report passes, failures and gaps. Source, local build, live deployment and
+analytics account data are different evidence. Tracking requests are not
+account attribution. Fix only when implementation is authorized. Verify never
+publishes.

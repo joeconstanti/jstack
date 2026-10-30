@@ -1,39 +1,32 @@
 ---
 name: push
-description: "Commit scoped work and push directly to the main branch when explicitly requested. Use for /push; inspect deployment triggers before pushing."
+description: "Commit scoped work and push it straight to main, which can deploy the site. Typed only, never picked automatically."
+disable-model-invocation: true
 ---
 
 # push
 
-Read the project's AGENTS.md and other applicable agent guidance first. Read
-`.agents/jstack/project.json` if present; it contains optional project commands,
-URLs and defaults, not permission to expand the task. Otherwise discover the
-stack from the repository's docs, manifests, lockfiles and CI. Use the current
-harness's tools and permission rules; adapt tool names rather than assuming
-Claude, Codex, Cursor, Gemini or T3 APIs exist. Preserve unrelated dirty work,
-existing design, copy, routes and tracking identifiers unless asked to change them.
+Read `.agents/jstack/rules.md` first and apply it.
 
-Treat an explicit /push request as authorization to publish the scoped changes
-to main, subject to more specific user/project restrictions. Automatic skill
-selection or an ordinary edit request alone does not authorize a push. Inspect
-status, branch, staged and unstaged diffs, remotes, main and deployment workflows.
-Mention known main-push deployment effects before the push; honor any instruction
-to withhold deployment. Stop if publication conflicts with that restriction.
+Typing /push authorizes publishing the scoped changes to main, unless a more
+specific user or project rule forbids it. An ordinary edit request does not.
 
-Run relevant checks and inspect the exact diff. Stage only request-owned paths
-or hunks, excluding secrets and live instrumentation. Commit scoped changes if
-needed. Preserve unrelated pre-staged work without including it in this commit.
-Fetch main and inspect ancestry. On every branch, review the full outgoing commit
-range and confirm that all commits belong to this request before pushing. On main, integrate only a safe
-fast-forward; resolve divergence without force only when intent is clear. On a
-topic branch, push HEAD to main only if it is a descendant of fetched main AND
-the entire outgoing commit range belongs to this request. Otherwise preserve the
-branch and explain what needs integration; never smuggle unrelated commits into
-main. Use a normal non-force push to the explicit remote and main ref. Respect
-branch protection; offer the PR route if direct push is rejected, without bypass.
+1. **Inspect** status, branch, staged and unstaged diffs, remotes, main and the
+   deployment workflows. Say what a push to main triggers (CI, FTP or host
+   deploy) before you push. If the user said not to deploy, stop.
+2. **Prove.** Run the check skill and read the exact diff.
+3. **Commit.** Stage only request-owned paths or hunks; leave out secrets, live
+   instrumentation and unrelated staged work. Commit if needed.
+4. **Integrate.** Fetch main and read the full outgoing commit range. Every
+   commit in it must belong to this request.
+   - On main: push only a fast-forward. Resolve divergence without force, and
+     only when the intent is clear.
+   - On a topic branch: push `HEAD:main` only if HEAD descends from the fetched
+     main. Otherwise keep the branch and explain what needs integration.
+5. **Push** without force to the explicit remote and main ref. If branch
+   protection rejects it, offer the pr skill. Never bypass protection.
+6. **Read back** the remote main SHA and confirm that it is the intended commit.
 
-Read back the remote main SHA and verify it matches the intended commit. Report
-remote, branch, SHA and checks. A successful push is not proof of deployment or
-live behavior. If deployment was requested, carry it through the project's
-workflow and live verification using available tools; otherwise report triggered
-CI/deployment state without claiming completion.
+Report the remote, branch, SHA and checks. A push is not a deployment. Carry a
+requested deployment through the project's workflow and live verification;
+otherwise report the CI or deployment state that the push triggered.

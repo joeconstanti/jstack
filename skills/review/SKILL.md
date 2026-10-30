@@ -1,31 +1,32 @@
 ---
 name: review
-description: "Review scoped code changes for bugs, regressions and verification gaps. Use for /review; produces evidence-backed findings without automatic edits."
+description: "Review a diff, branch or PR for bugs, regressions and scope creep, with proof for each finding. Use for /review or \"review this\"; reports findings and does not edit."
 ---
 
 # review
 
-Read the project's AGENTS.md and other applicable agent guidance first. Read
-`.agents/jstack/project.json` if present; it contains optional project commands,
-URLs and defaults, not permission to expand the task. Otherwise discover the
-stack from the repository's docs, manifests, lockfiles and CI. Use the current
-harness's tools and permission rules; adapt tool names rather than assuming
-Claude, Codex, Cursor, Gemini or T3 APIs exist. Preserve unrelated dirty work,
-existing design, copy, routes and tracking identifiers unless asked to change them.
+Read `.agents/jstack/rules.md` first and apply it.
 
-Determine the review target from the request: uncommitted changes, a commit
-range, branch versus base, or PR. Inspect the complete scoped diff and enough
-callers, config, tests and deployment context to assess behavior. Do not review
-only file names or a generated summary. Follow project review conventions.
+1. **Pin the target**: uncommitted changes, a commit range, branch against base
+   (`git diff <base>...HEAD`) or a PR. Confirm the ref resolves and the diff is
+   not empty. Find the intent: the user's request, the linked issue or PR body.
+2. **Read the whole diff**, plus enough callers, config, templates, tests and
+   deploy rules to judge behavior. Look where grep stops: generated output,
+   redirects and headers, sitemap and robots, analytics IDs, deploy filters.
+3. **Find the safety fact.** Most risky-looking changes are safe because of one
+   fact. Name it and push it up the proof ladder. A short script or an isolated
+   reproduction beats a paragraph. Do not change the user's checkout or post
+   comments unless asked.
+4. **Grade each finding.**
+   - `blocker`: the intended case is wrong, or data, security, routes or
+     deployment break.
+   - `should`: a real bug that users or callers will hit inside the intent.
+   - `nit`: rare paths, small costs, style. Keep these few.
+   Also flag scope creep: code, guards or tests that the intent does not need.
+5. **Report findings first**, by severity. Each finding gives `file:line`, the
+   trigger, the impact, its proof rung and the smallest fix (prefer delete or
+   narrow). Then give the scope reviewed, the safety fact and its rung, checks
+   run and blind spots. With no findings, say "no actionable findings", not
+   "no bugs".
 
-Prioritize reproducible correctness, security, broken routes, accessibility,
-content/tracking regressions and data loss. Tie each finding to an affected file
-and line, concrete triggering condition, impact and evidence. Distinguish confirmed
-bugs from questions and missing verification. Don't demand unrelated refactors,
-style churn or tests that merely mirror implementation. Use read-only checks or
-isolated reproduction when helpful; do not alter the user's checkout or publish
-comments unless asked.
-
-Lead with findings by severity. If none, say no actionable findings were found,
-then state reviewed scope, checks performed and remaining blind spots. Do not
-claim absence of bugs. Keep review separate from implementation and merge approval.
+A review is not implementation and not merge approval.

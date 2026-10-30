@@ -55,3 +55,25 @@ commands were run merely to install skills.
 Reload the coding agent in a target project, then invoke `/doctor` or Codex's
 `$doctor`. Use `/preview` and `/edit` (Codex `$preview` and `$edit`) when a real
 preview/live-edit session is wanted. This rollout did not start those sessions.
+
+## Update to 0.2.0 — 30 October 2026
+
+The six projects were updated in place from this checkout with `install.py`.
+Each dry run showed 48 changes and no collisions or modified managed files.
+
+| Website | Project folder | Managed paths | Integrity check | Doctor | Other Git state |
+|---------|----------------|---------------|-----------------|--------|-----------------|
+| fromtheroot.studio | fromtheroot-web | 94 | Passed | Passed | Unchanged |
+| automatedigital.ai | automate | 94 | Passed | Passed | Unchanged |
+| syntheticlabs.xyz | syntheticlabs | 72 | Passed | Passed | Unchanged |
+| madebyjoe.co | madebyjoe | 94 | Passed | Passed | Unchanged |
+| joe.graphics | joegraphics | 94 | Passed | Passed | Unchanged |
+| glasspane.xyz | glasspane | 61 | Passed | Passed | Unchanged |
+
+"Unchanged" means `git status --porcelain` and `git diff` hashed the same before
+and after the update. The three new managed paths per project are
+`.agents/jstack/rules.md` and the Codex `agents/openai.yaml` policies for `push`
+and `update-skills`. Existing deploy exclusions (`.agents/**`, `.claude/**`, and
+the other provider folders) already keep them out of FTP and rsync uploads.
+project.json files were kept. The installations remain uncommitted local
+changes; nothing was pushed or deployed, and no agent was reloaded.

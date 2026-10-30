@@ -42,18 +42,24 @@
 | `/audit [url]` | Run the relevant [Claude SEO](https://github.com/AgriciDaniel/claude-seo) audit and prioritize findings | Local reports; no automatic site fixes |
 | `/edit [route]` | Enter [Impeccable Live Mode](https://github.com/pbakaus/impeccable) in the shared app preview | Local app/helper processes and requested source edits |
 | `/preview [route]` | Start or reuse this checkout's server and open its app preview | Local development process |
-| `/pr` | Create a descriptive topic branch, scoped commit, push and detailed PR | Publishes a topic branch and PR; no merge |
-| `/push` | Commit scoped work and push directly to main | Publishes code; may trigger existing deployment CI |
+| `/pr` | Topic branch, scoped commit, push and a problem-first PR; babysits it on request | Publishes a topic branch and PR; no merge |
+| `/push` | Commit scoped work and push directly to main (typed only) | Publishes code; may trigger existing deployment CI |
 | `/check` | Run relevant build, lint, syntax and test commands | Local check/build output |
-| `/review [target]` | Review a diff, branch or PR for concrete bugs and regressions | Findings only |
+| `/review [target]` | Grade bugs, regressions and scope creep as blocker, should or nit | Findings only |
 | `/verify [route]` | Check rendered routes, responsive layouts and key interactions | Local browser evidence |
 | `/doctor` | Diagnose skill integrity, discovery paths and project setup | Read-only diagnostics |
-| `/update-skills` | Review and apply a project-local jstack update | Managed skill files; retains local project config |
+| `/update-skills` | Review and apply a project-local jstack update (typed only) | Managed skill files; retains local project config |
 
 Commands are agent instructions, not new shell executables. **Codex uses `$pull`,
 `$audit`, `$edit`, and so on.** Slash syntax varies by client; see Agent Support.
 An agent may also discover and use the relevant skill from a natural-language
-request. Publishing still requires the user's explicit intent to publish.
+request, except `/push` and `/update-skills`: those fire only when typed
+(`disable-model-invocation` for Claude Code and Cursor, `agents/openai.yaml`
+policy for Codex). Publishing still requires the user's explicit intent.
+
+Every skill first reads one shared file, `.agents/jstack/rules.md`. It holds the
+context, scope, proof and outcome rules once, so each SKILL.md stays short. Its
+proof ladder (stated, cited, ran, observed) is how every skill reports evidence.
 
 A typical change can use `/pull` → `/preview` or `/edit` → `/check` → `/review` →
 `/verify` → `/pr`. Each workflow also works on its own. `/push` is the direct-main
@@ -83,8 +89,9 @@ chain that silently publishes work.
 
 ```text
 jstack/
-├── skills/                  # Eleven self-contained SKILL.md workflows
+├── skills/                  # Eleven short SKILL.md workflows
 │   └── doctor/scripts/      # Read-only installation diagnostics
+├── shared/rules.md          # Context, scope, proof and outcome rules all skills read
 ├── install.py               # Project-only install / check / uninstall
 ├── setup-seo.py             # Optional pinned SEO instructions, no runtime setup
 ├── tests/                   # Installer integration and catalog checks
@@ -102,6 +109,7 @@ Inside a target project:
 .agents/
 ├── skills/<command>/SKILL.md # Canonical installed skills
 └── jstack/
+    ├── rules.md             # Shared rules every skill reads first
     ├── manifest.json        # Version + hashes + owned paths
     ├── project.json         # Project-owned optional settings
     └── LICENSE
@@ -123,7 +131,7 @@ Clone jstack **beside your projects**, then name the target repository explicitl
 ```sh
 git clone https://github.com/joeconstanti/jstack.git
 cd jstack
-git checkout v0.1.0
+git checkout v0.2.0
 python3 install.py install --project /absolute/path/to/your-project --dry-run
 python3 install.py install --project /absolute/path/to/your-project
 python3 install.py check --project /absolute/path/to/your-project
@@ -255,7 +263,7 @@ separately installed SEO/Impeccable dependencies remain after jstack removal.
 |------|--------|
 | **Branch** | Use a descriptive branch such as `fix/installer-collision` |
 | **Change** | Keep skills concise, stack-aware and faithful to the user's scope |
-| **Validate** | Run `python3 -m unittest discover -s tests -v` |
+| **Validate** | Run `python3 -m unittest discover -s tests -v`; skills must stay under 60 lines |
 | **PR** | Explain the behavior change and provide actual validation |
 
 Useful contributions include real cross-agent compatibility fixes, better stack
