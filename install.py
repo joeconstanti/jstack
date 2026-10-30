@@ -84,12 +84,13 @@ def plan(root):
                 continue
             target = os.path.relpath(canonical, alias.parent.resolve())
             desired[f'{provider}/skills/{skill.name}'] = {'kind': 'link', 'target': target}
-        body = skill.joinpath('SKILL.md').read_text().split('---', 2)[2].strip()
+        body = skill.joinpath('SKILL.md').read_text(encoding='utf-8').split('---', 2)[2].strip()
         # Cursor commands and Gemini TOML give native short slash aliases as well
         # as ordinary SKILL.md discovery. Claude discovers the skill name directly.
         desired[f'.cursor/commands/{skill.name}.md'] = file_entry((body + '\n\nArguments: $ARGUMENTS\n').encode())
         prompt = body + '\n\nArguments: {{args}}\n'
-        toml = f'description = {json.dumps("jstack " + skill.name)}\nprompt = {json.dumps(prompt)}\n'
+        # TOML has no surrogate-pair escapes, so keep non-ASCII text as UTF-8.
+        toml = f'description = {json.dumps("jstack " + skill.name)}\nprompt = {json.dumps(prompt, ensure_ascii=False)}\n'
         desired[f'.gemini/commands/{skill.name}.toml'] = file_entry(toml.encode())
         desired[f'.opencode/commands/{skill.name}.md'] = file_entry((body + '\n\nArguments: $ARGUMENTS\n').encode())
     # Refuse two lexical paths that resolve onto the same file via custom links.

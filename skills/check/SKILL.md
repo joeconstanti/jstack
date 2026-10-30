@@ -17,9 +17,10 @@ Read `.agents/jstack/rules.md` first and apply it.
    not deploy, run fix mode, format everything or upgrade dependencies.
 4. **Classify failures.** Before you blame the change, find out if the check
    also fails without it (CI on main, or a clean worktree). Report a
-   pre-existing failure as pre-existing.
+   pre-existing failure as pre-existing. Rerun a suspected flake once; the
+   same failure twice is real.
 5. **Fix** failures that this task owns, when implementation is authorized, and
    run that check again. Report tracked files that a build regenerated.
 
-Report each command, its exit result and what it covers. A build is not browser
-proof. Use the verify skill for rendered behavior.
+Report each command, its exit result and what it covers. Use the verify skill
+for rendered behavior.

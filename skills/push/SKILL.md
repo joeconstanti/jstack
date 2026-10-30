@@ -27,6 +27,6 @@ specific user or project rule forbids it. An ordinary edit request does not.
    protection rejects it, offer the pr skill. Never bypass protection.
 6. **Read back** the remote main SHA and confirm that it is the intended commit.
 
-Report the remote, branch, SHA and checks. A push is not a deployment. Carry a
-requested deployment through the project's workflow and live verification;
-otherwise report the CI or deployment state that the push triggered.
+Report the remote, branch, SHA and checks. Carry a requested deployment
+through the project's workflow and live verification; otherwise report the CI
+or deployment state that the push triggered.

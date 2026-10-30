@@ -131,7 +131,7 @@ Clone jstack **beside your projects**, then name the target repository explicitl
 ```sh
 git clone https://github.com/joeconstanti/jstack.git
 cd jstack
-git checkout v0.2.0
+git checkout v0.3.0
 python3 install.py install --project /absolute/path/to/your-project --dry-run
 python3 install.py install --project /absolute/path/to/your-project
 python3 install.py check --project /absolute/path/to/your-project

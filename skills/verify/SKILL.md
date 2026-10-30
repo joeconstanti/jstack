@@ -10,9 +10,10 @@ Read `.agents/jstack/rules.md` first and apply it. The goal is rung 4 (observed)
 1. **Target.** Use the preview skill to find this checkout's app. List the
    routes that the change touches, plus shared navigation, header and footer.
    Use the project's browser QA scripts when they exist.
-2. **Baseline.** For a visual change, capture the state before the change
-   (main, the live site or a supplied reference) so you compare against
-   something real.
+2. **Baseline.** For a bug fix, reproduce the failure on the same route and
+   viewport first, then watch the same path pass after the fix. For a visual
+   change, capture main, the live site or a supplied reference. When the user
+   asks for a match, compare by image diff and keep the reference unchanged.
 3. **Drive the real user path** at desktop and narrow mobile widths. Let fonts,
    images and animations settle. Check the main action, keyboard focus,
    relevant loading, empty and error states, internal links, and console and
@@ -25,7 +26,5 @@ Read `.agents/jstack/rules.md` first and apply it. The goal is rung 4 (observed)
    evidence under `.agents/jstack/reports/verify/` or where the user asks. Stop
    only processes you started, and keep the evidence.
 
-Report passes, failures and gaps. Source, local build, live deployment and
-analytics account data are different evidence. Tracking requests are not
-account attribution. Fix only when implementation is authorized. Verify never
-publishes.
+Report passes, failures and gaps. A tracking request is not account
+attribution. Fix only when implementation is authorized.

@@ -17,9 +17,11 @@ Read `.agents/jstack/rules.md` first and apply it.
      the divergence instead of inventing a resolution.
    - On a topic branch: merge the fetched main into it and keep published
      history. Rebase only when the project convention says so and the branch is
-     not shared.
+     not shared, then compare the old and new commits with `git range-diff`.
 4. **Conflicts.** Keep both sides' intent. Resolve a conflict only when the
    intent is clear. Otherwise list the files that need a decision.
+5. **Check.** After a merge or rebase, run the check skill. A clean merge is
+   not a working build.
 
 Never push. Report the branch, the resulting SHA and whether it was a
 fast-forward, a merge or blocked.

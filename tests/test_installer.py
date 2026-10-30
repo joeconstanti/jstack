@@ -172,6 +172,9 @@ class InstallerTests(unittest.TestCase):
             policy = SOURCE / 'skills' / name / 'agents/openai.yaml'
             self.assertEqual(typed_only, name in {'push', 'update-skills'}, name)
             self.assertEqual(typed_only, policy.is_file() and 'allow_implicit_invocation: false' in policy.read_text(), name)
+            # No skill can invoke a typed-only skill, so none may tell the agent to.
+            for typed in ('push', 'update-skills'):
+                self.assertNotRegex(text, rf'(run|use|invoke) the {typed} skill', name)
 
 
 if __name__ == '__main__':

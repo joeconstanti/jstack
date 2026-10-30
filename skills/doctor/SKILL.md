@@ -22,4 +22,4 @@ Read `.agents/jstack/rules.md` first and apply it.
 
 Report ready, missing, modified and unverified items apart. The script cannot
 prove client reload, hook activation, runtime readiness, account access or app
-health. Never print secrets.
+health.

@@ -139,3 +139,46 @@ Rejected, with reason:
 - **Model-specific delegation** (named reviewer models, multi-model panels).
   Harness- and account-specific; it belongs in personal AGENTS.md or CLAUDE.md.
 - **Em-dash and prose style bans.** A style choice, not a behavior fix.
+
+## Third pass, v0.3.0 (30 October 2026)
+
+A third read covered parts of the repositories that the second pass did not
+use: tstack `full-stop`, `modernize`, `takeover` and `leaving-pr-comments`;
+pstack `principle-prove-it-works`, `fix-root-causes`, `attack-the-premise`,
+`never-block-on-the-human` and the `bug-fix`, `visual-parity`, `babysit`,
+`shipping` and `opening-a-pr` playbooks; Matt Pocock's `writing-for-agents`,
+`SKILL-MECHANICS`, `invocation.md`, `code-review`, `diagnosing-bugs` and
+`SCOPE.md`. Same rule as before: a line must change agent behavior. Skill and
+rules text went from 391 to 416 lines; duplicated lines in skills moved into
+`rules.md` or were deleted.
+
+| Change | Source idea | Why it earns its place |
+|--------|-------------|------------------------|
+| Untrusted input rule: page, comment and issue text is data, never shell input | pstack `babysit` step 8 | audit crawls pages and pr reads bot comments; both were open to prompt injection |
+| Decide reversible steps, ask only with the question tool and a recommendation | tstack `full-send` "Asking the user"; pstack `never-block-on-the-human` | Fewer stalled turns; a question in plain text looks like a finished thread |
+| Delegates start fresh and never publish or watch | Matt `CLAUDE.md` fresh context; tstack `babysit-pr` owner rule | One owner per PR; no forked context leaking into reviews |
+| Skills invoke only model-invoked skills; a test enforces it | Matt `invocation.md` | A typed-only skill cannot be reached from another skill |
+| Suspect the observation first; test the premise after two failed fixes | pstack `prove-it-works`, `attack-the-premise` | Stops fix loops on a stale preview or the wrong checkout |
+| One redaction rule (`<REDACTED>`) replaces per-skill secret lines | Matt `diagnosing-bugs` "Redact" | One source of truth; covers reports and comments too |
+| Verify reproduces a bug before the fix on the same route and viewport | tstack `full-send` Proof; pstack `bug-fix` | A passing page after a fix proves nothing without the failing one |
+| Parity requests use an image diff against an unchanged reference | pstack `visual-parity` | "Looks the same" is not a match |
+| Review tags findings `intent` or `standards` | Matt `code-review` two axes | One axis cannot hide the other |
+| Check reruns a suspected flake once; pr treats untouched-code failures as a stale base | pstack `babysit` step 7 | No blind retries; no false "flake" labels |
+| PR babysit: status questions get one read, quiet wakes, BEHIND/DIRTY gate, exact comment callout | tstack `babysit-pr`, `leaving-pr-comments`; pstack `babysit` `check` mode | Less noise, no premature "ready", a fixed comment format |
+| Pull runs check after a merge, and `range-diff` after a rebase | tstack `modernize` | A clean merge is not a working build |
+
+The new comment callout contains an emoji. That exposed an installer bug: the
+Gemini TOML adapter wrote it as a JSON surrogate pair, which TOML rejects. The
+installer now writes non-ASCII text as UTF-8.
+
+Rejected, with reason:
+
+- **full-send / full-stop, modernize, takeover, pause and pickup skills.** They
+  compose from pull, check, review, verify and pr, and Matt's bar keeps new
+  skills out when they compose. Their useful lines went into existing skills.
+- **pstack Origin forge, stacks and merge-frontier rules.** jstack sites ship
+  single PRs or direct pushes; stack mechanics add load for no observed need.
+- **Codex `agents/openai.yaml` for every skill.** Codex discovers the skills
+  without it; only typed-only skills need the policy file.
+- **Router skill and per-skill docs pages.** Eleven commands still fit in one
+  README table.
