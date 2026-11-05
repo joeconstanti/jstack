@@ -11,7 +11,7 @@ import subprocess
 
 def diagnose(root):
     result = {'tools': {name: bool(shutil.which(name)) for name in ['git', 'python3', 'node', 'npm', 'gh']},
-              'problems': [], 'unverified': ['agent reload/discovery', 'hook activation', 'SEO runtime dependencies',
+              'problems': [], 'workflows': {}, 'unverified': ['agent reload/discovery', 'hook activation', 'SEO runtime dependencies',
                                                'authenticated accounts', 'rendered app and deployment']}
     manifest_path = root / '.agents/jstack/manifest.json'
     manifest_files = {}
@@ -19,10 +19,14 @@ def diagnose(root):
         result['problems'].append('jstack manifest missing')
     else:
         manifest = json.loads(manifest_path.read_text())
-        manifest_files = manifest.get('files', {})
+        if not isinstance(manifest, dict) or manifest.get('schema') != 1 or not isinstance(manifest.get('files'), dict):
+            raise ValueError('Invalid jstack manifest: expected schema 1 and a files object.')
+        manifest_files = manifest['files']
         result['version'] = manifest.get('version')
-        result['managed_paths'] = len(manifest.get('files', {}))
-        for relative, expected in manifest.get('files', {}).items():
+        result['managed_paths'] = len(manifest_files)
+        for relative, expected in manifest_files.items():
+            if not isinstance(expected, dict) or expected.get('kind') not in {'file', 'link'}:
+                raise ValueError(f'Invalid manifest entry: {relative}')
             path = root / relative
             if not path.resolve().is_relative_to(root) or Path(relative).is_absolute() or '..' in Path(relative).parts:
                 result['problems'].append(f'unsafe managed path: {relative}')
@@ -49,10 +53,10 @@ def diagnose(root):
     result['discovery_files'] = {}
     for provider in ['.agents', '.claude', '.cursor', '.gemini', '.opencode']:
         result['discovery_files'][provider] = bool(skills) and all((root / provider / 'skills' / name / 'SKILL.md').is_file() for name in skills)
-    if not result['seo']:
-        result['problems'].append('audit dependency missing: Claude SEO')
-    if not result['impeccable'] or not result['impeccable_launcher']:
-        result['problems'].append('edit dependency missing: Impeccable')
+    for workflow, available in [('audit', bool(result['seo'])),
+                                ('edit', result['impeccable'] and result['impeccable_launcher'])]:
+        result['workflows'][workflow] = {'instructions': 'available' if available else 'missing',
+                                         'runtime': 'unverified'}
     if not all(result['discovery_files'].values()):
         result['problems'].append('one or more provider skill entrypoints missing')
     git = subprocess.run(['git', '-C', str(root), 'status', '--porcelain'], capture_output=True, text=True)

@@ -182,3 +182,13 @@ Rejected, with reason:
   without it; only typed-only skills need the policy file.
 - **Router skill and per-skill docs pages.** Eleven commands still fit in one
   README table.
+
+## Design and knowledge expansion — 5 November 2026
+
+A fresh source inspection of all six requested stacks informed three original
+capabilities: design direction/critique, evidence synthesis and artifact writing.
+The [pinned comparison](quality.md) records sources, licenses, scoring and rejected
+alternatives; [acceptance cases](evaluation.md) distinguish manual walkthroughs
+from installation tests and independent behavioral evaluation. No upstream prose,
+code or assets were incorporated in this expansion. Design and knowledge work
+reuse review/verify rather than adding duplicate critique and export commands.

@@ -4,6 +4,7 @@ import argparse
 import hashlib
 import json
 import os
+import re
 from pathlib import Path
 import subprocess
 import sys
@@ -59,10 +60,62 @@ def record(entry):
 
 def load_manifest(root):
     path = safe_path(root, MANIFEST, True)
-    return json.loads(path.read_text()) if path.exists() else {'files': {}}
+    if not path.exists():
+        return {'files': {}}
+    manifest = json.loads(path.read_text())
+    if not isinstance(manifest, dict) or manifest.get('schema') != 1 or not isinstance(manifest.get('files'), dict):
+        raise ValueError('Invalid jstack manifest: expected schema 1 and a files object.')
+    for relative, entry in manifest['files'].items():
+        if not isinstance(entry, dict):
+            raise ValueError(f'Invalid manifest entry: {relative}')
+        if entry.get('kind') == 'file':
+            valid = (isinstance(entry.get('sha256'), str) and
+                     re.fullmatch(r'[0-9a-f]{64}', entry['sha256']) and
+                     isinstance(entry.get('executable'), bool))
+        else:
+            valid = entry.get('kind') == 'link' and isinstance(entry.get('target'), str) and bool(entry['target'])
+        if not valid:
+            raise ValueError(f'Invalid manifest entry: {relative}')
+    return manifest
+
+
+def validate_catalog():
+    """Validate our intentionally small frontmatter dialect without a YAML runtime."""
+    skills = sorted((SOURCE / 'skills').iterdir())
+    for skill in skills:
+        text = (skill / 'SKILL.md').read_text(encoding='utf-8')
+        parts = text.split('---\n', 2)
+        if len(parts) != 3 or parts[0] or len(text.splitlines()) > 60:
+            raise ValueError(f'{skill.name}: invalid frontmatter or exceeds 60 lines')
+        fields = {}
+        for line in parts[1].splitlines():
+            key, separator, value = line.partition(': ')
+            if not separator or key in fields or key not in {'name', 'description', 'disable-model-invocation'}:
+                raise ValueError(f'{skill.name}: unsupported or duplicate frontmatter field')
+            fields[key] = value
+        if fields.get('name') != skill.name or not re.fullmatch(r'[a-z0-9]+(?:-[a-z0-9]+)*', skill.name):
+            raise ValueError(f'{skill.name}: name must match its folder')
+        description = json.loads(fields.get('description', 'null'))
+        if not isinstance(description, str) or not description.strip():
+            raise ValueError(f'{skill.name}: description must be a JSON-quoted string')
+        typed = skill.name in {'push', 'update-skills'}
+        if fields.get('disable-model-invocation') != ('true' if typed else None):
+            raise ValueError(f'{skill.name}: incorrect invocation policy')
+        policy = skill / 'agents/openai.yaml'
+        explicit = policy.is_file() and bool(re.search(r'^  allow_implicit_invocation: false$', policy.read_text(), re.M))
+        if explicit != typed:
+            raise ValueError(f'{skill.name}: inconsistent Codex invocation policy')
+        if 'Read `.agents/jstack/rules.md` first' not in parts[2]:
+            raise ValueError(f'{skill.name}: missing shared rules reference')
+        for matches in re.findall(r'`(references/[^`]+)`|\]\((references/[^)]+)\)', parts[2]):
+            reference = skill / next(value for value in matches if value)
+            if not reference.resolve().is_relative_to(skill.resolve()) or not reference.is_file():
+                raise ValueError(f'{skill.name}: missing or unsafe reference {reference.name}')
+    return skills
 
 
 def plan(root):
+    skills = validate_catalog()
     desired = {}
     for source in sorted((SOURCE / 'skills').rglob('*')):
         if source.is_file() and '__pycache__' not in source.parts and source.suffix != '.pyc':
@@ -72,9 +125,7 @@ def plan(root):
     desired['.agents/jstack/LICENSE'] = file_entry((SOURCE / 'LICENSE').read_bytes())
     # Every skill points here, so shared rules live in one place.
     desired['.agents/jstack/rules.md'] = file_entry((SOURCE / 'shared/rules.md').read_bytes())
-    for skill in sorted((SOURCE / 'skills').iterdir()):
-        if not (skill / 'SKILL.md').is_file():
-            continue
+    for skill in skills:
         canonical = root / '.agents/skills' / skill.name
         for provider in PROVIDERS:
             alias = safe_path(root, f'{provider}/skills/{skill.name}')
@@ -84,15 +135,15 @@ def plan(root):
                 continue
             target = os.path.relpath(canonical, alias.parent.resolve())
             desired[f'{provider}/skills/{skill.name}'] = {'kind': 'link', 'target': target}
-        body = skill.joinpath('SKILL.md').read_text(encoding='utf-8').split('---', 2)[2].strip()
-        # Cursor commands and Gemini TOML give native short slash aliases as well
-        # as ordinary SKILL.md discovery. Claude discovers the skill name directly.
-        desired[f'.cursor/commands/{skill.name}.md'] = file_entry((body + '\n\nArguments: $ARGUMENTS\n').encode())
-        prompt = body + '\n\nArguments: {{args}}\n'
-        # TOML has no surrogate-pair escapes, so keep non-ASCII text as UTF-8.
-        toml = f'description = {json.dumps("jstack " + skill.name)}\nprompt = {json.dumps(prompt, ensure_ascii=False)}\n'
+        # Adapters load the canonical skill so skill-local references have one base.
+        prompt = (f'Read `.agents/skills/{skill.name}/SKILL.md` and follow it for this request.\n'
+                  'Resolve its relative references from that skill folder.\n'
+                  'Apply `.agents/jstack/rules.md`.\n')
+        desired[f'.cursor/commands/{skill.name}.md'] = file_entry((prompt + '\nArguments: $ARGUMENTS\n').encode())
+        gemini_prompt = prompt + "\nArguments: {{args}}\n"
+        toml = f'description = {json.dumps("jstack " + skill.name)}\nprompt = {json.dumps(gemini_prompt, ensure_ascii=False)}\n'
         desired[f'.gemini/commands/{skill.name}.toml'] = file_entry(toml.encode())
-        desired[f'.opencode/commands/{skill.name}.md'] = file_entry((body + '\n\nArguments: $ARGUMENTS\n').encode())
+        desired[f'.opencode/commands/{skill.name}.md'] = file_entry((prompt + '\nArguments: $ARGUMENTS\n').encode())
     # Refuse two lexical paths that resolve onto the same file via custom links.
     resolved = {}
     for relative in desired:

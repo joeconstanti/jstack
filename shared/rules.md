@@ -8,7 +8,9 @@ Every jstack skill reads this file first. Skills hold only their own steps.
   notes) outranks these skills. Use its terms.
 - `.agents/jstack/project.json` holds optional hints (remote, main branch, site
   URL, dev, preview and check commands), not permission to widen the task.
-  Discover a missing hint from manifests, lockfiles, scripts and CI.
+  Discover a missing hint from manifests, lockfiles, scripts and CI. For design
+  and knowledge work, read the brief, audience, source material and existing
+  terminology instead; a build pipeline is not a prerequisite.
 - T3, Claude or `gh` tool names in a step are examples. Use what this harness has.
 - When a step names another jstack skill, invoke that skill with the harness's
   skill tool (or read its SKILL.md) instead of improvising its job. `push` and
@@ -48,6 +50,11 @@ rendered page. A push is not a deployment. When a check gives a strange result,
 suspect the observation (wrong URL, stale cache, other checkout) before the
 code. After two failed fixes that share one premise, write the premise down and
 test it before a third fix.
+
+For research and knowledge work, cite the source passage and date/version.
+Distinguish source claims, your inference and recommendations. A citation proves
+traceability, not truth; a rendered export proves layout, not factual accuracy.
+Do not put private source material in public artifacts or repositories.
 
 ## Outcome
 

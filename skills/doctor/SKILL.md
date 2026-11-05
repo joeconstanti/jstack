@@ -9,7 +9,8 @@ Read `.agents/jstack/rules.md` first and apply it.
 
 1. **Run** `python3 .agents/skills/doctor/scripts/doctor.py --project .` from
    the repository root. It checks jstack file integrity, discovery links,
-   configured commands, tools and the SEO and Impeccable entrypoints.
+   configured commands, tools and the SEO and Impeccable entrypoints. Missing
+   optional specialists limit those workflows, not installation integrity.
 2. **Compare** its report with README, project.json, lockfiles and the tool
    versions that project docs require.
 3. **Dependencies.** For the SEO runtime, run the installed claude-seo launcher

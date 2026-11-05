@@ -1,4 +1,5 @@
 import json
+import shutil
 import importlib.util
 import contextlib
 import io
@@ -154,8 +155,165 @@ class InstallerTests(unittest.TestCase):
         self.assertEqual(skill.read_text(), 'project-owned SEO')
         self.assertFalse((self.root / '.agents/skills/claude-seo').exists())
 
+    def test_code_free_project_installs_knowledge_resources_and_adapters(self):
+        self.run_installer()
+        for name in ('design', 'research', 'write'):
+            canonical = self.root / '.agents/skills' / name
+            self.assertTrue(list((canonical / 'references').glob('*.md')))
+            for provider in ('.claude', '.cursor', '.gemini', '.opencode'):
+                self.assertEqual((self.root / provider / 'skills' / name).resolve(), canonical.resolve())
+            for provider, suffix in (('.cursor', '.md'), ('.gemini', '.toml'), ('.opencode', '.md')):
+                self.assertTrue((self.root / provider / 'commands' / (name + suffix)).is_file())
+        self.assertFalse((self.root / 'package.json').exists())
+        self.run_installer('check')
+        self.run_installer('uninstall')
+        for name in ('design', 'research', 'write'):
+            self.assertFalse(any(p.is_file() for p in (self.root / '.agents/skills' / name).rglob('*')))
+
+    def test_catalog_expansion_update_preserves_config_and_rejects_new_collision(self):
+        # Simulate the preceding catalog, then update via the real CLI.
+        old_source = Path(self.temp.name) / 'old-source'
+        old_source.mkdir()
+        for filename in ('install.py', 'LICENSE', 'VERSION'):
+            shutil.copy2(SOURCE / filename, old_source / filename)
+        for folder in ('skills', 'shared'):
+            shutil.copytree(SOURCE / folder, old_source / folder)
+        for name in ('design', 'research', 'write'):
+            shutil.rmtree(old_source / 'skills' / name)
+        result = subprocess.run([sys.executable, str(old_source / 'install.py'), 'install',
+                                 '--project', str(self.root)], capture_output=True, text=True)
+        self.assertEqual(result.returncode, 0, result.stderr)
+        config = self.root / '.agents/jstack/project.json'
+        config.write_text('{"main_branch": "trunk"}\n')
+        manifest = self.root / '.agents/jstack/manifest.json'
+        before = manifest.read_bytes()
+        collision = self.root / '.agents/skills/write/SKILL.md'
+        collision.parent.mkdir()
+        collision.write_text('existing writing skill')
+        self.run_installer(ok=False)
+        self.assertEqual(manifest.read_bytes(), before)
+        self.assertEqual(collision.read_text(), 'existing writing skill')
+        self.assertFalse((self.root / '.agents/skills/design').exists())
+        collision.unlink()
+        collision.parent.rmdir()
+        self.run_installer()
+        self.run_installer('check')
+        self.assertEqual(json.loads(config.read_text()), {'main_branch': 'trunk'})
+        self.assertTrue((self.root / '.agents/skills/write/references/editorial.md').is_file())
+
+    def test_adapters_load_canonical_skill_and_keep_arguments(self):
+        self.run_installer()
+        for name in ('design', 'research', 'write', 'push'):
+            for provider in ('.cursor', '.gemini', '.opencode'):
+                suffix = '.toml' if provider == '.gemini' else '.md'
+                content = (self.root / provider / 'commands' / (name + suffix)).read_text()
+                prompt = tomllib.loads(content)['prompt'] if suffix == '.toml' else content
+                self.assertIn(f'.agents/skills/{name}/SKILL.md', prompt)
+                self.assertIn('{{args}}' if suffix == '.toml' else '$ARGUMENTS', prompt)
+                self.assertNotIn('references/', prompt)
+                self.assertLess(len(prompt), 350)
+
+    def test_doctor_separates_optional_readiness_from_integrity(self):
+        self.run_installer()
+        doctor = self.root / '.agents/skills/doctor/scripts/doctor.py'
+        def diagnose():
+            result = subprocess.run([sys.executable, str(doctor), '--project', str(self.root)],
+                                    capture_output=True, text=True)
+            return result, json.loads(result.stdout)
+        result, report = diagnose()
+        self.assertEqual(result.returncode, 0, report)
+        self.assertTrue(report['ok'])
+        self.assertEqual(report['workflows']['edit']['instructions'], 'missing')
+        self.assertEqual(report['workflows']['audit']['runtime'], 'unverified')
+        skill = self.root / '.agents/skills/seo/SKILL.md'
+        skill.parent.mkdir()
+        skill.write_text('project-owned SEO')
+        result, report = diagnose()
+        self.assertEqual(result.returncode, 0, report)
+        self.assertEqual(report['workflows']['audit']['instructions'], 'available')
+        (self.root / '.agents/skills/write/SKILL.md').write_text('modified')
+        result, report = diagnose()
+        self.assertNotEqual(result.returncode, 0)
+        self.assertTrue(any('missing or modified' in item for item in report['problems']))
+
+    def test_malformed_manifests_fail_without_writes_or_tracebacks(self):
+        self.run_installer()
+        manifest = self.root / '.agents/jstack/manifest.json'
+        doctor = self.root / '.agents/skills/doctor/scripts/doctor.py'
+        for malformed in ([], {}, {'schema': 2, 'files': {}},
+                          {'schema': 1, 'files': []}, {'schema': 1, 'files': {'bad': None}}):
+            with self.subTest(manifest=malformed):
+                manifest.write_text(json.dumps(malformed))
+                before = manifest.read_bytes()
+                for action in ('install', 'check', 'uninstall'):
+                    result = self.run_installer(action, ok=False)
+                    self.assertIn('Invalid', result.stderr)
+                    self.assertNotIn('Traceback', result.stderr)
+                    self.assertEqual(manifest.read_bytes(), before)
+                result = subprocess.run([sys.executable, str(doctor), '--project', str(self.root)],
+                                        capture_output=True, text=True)
+                self.assertNotEqual(result.returncode, 0)
+                self.assertFalse(json.loads(result.stdout)['ok'])
+                self.assertNotIn('Traceback', result.stderr)
+
+    def test_late_update_failure_restores_all_managed_files(self):
+        self.run_installer()
+        spec = importlib.util.spec_from_file_location('jstack_install_late', SOURCE / 'install.py')
+        module = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(module)
+        def snapshot():
+            return {str(p.relative_to(self.root)): module.state(p) for p in self.root.rglob('*')
+                    if '.git' not in p.relative_to(self.root).parts and (p.is_file() or p.is_symlink())}
+        before = snapshot()
+        desired = module.plan(self.root.resolve())
+        desired['.agents/jstack/rules.md'] = module.file_entry(b'updated rules')
+        desired['.agents/jstack/new-file.md'] = module.file_entry(b'new file')
+        original = module.atomic_write
+        failed = False
+        def fail_manifest(path, data, executable=False):
+            nonlocal failed
+            if path.name == 'manifest.json' and not failed:
+                failed = True
+                raise OSError('simulated late failure')
+            return original(path, data, executable)
+        import argparse
+        with contextlib.redirect_stdout(io.StringIO()), patch.object(module, 'plan', return_value=desired), \
+                patch.object(module, 'atomic_write', side_effect=fail_manifest):
+            with self.assertRaisesRegex(OSError, 'late failure'):
+                module.run(argparse.Namespace(action='install', project=str(self.root), dry_run=False))
+        self.assertTrue(failed)
+        self.assertEqual(snapshot(), before)
+        self.run_installer('check')
+
+    def test_invalid_source_catalog_fails_before_target_writes(self):
+        spec = importlib.util.spec_from_file_location('jstack_install_catalog', SOURCE / 'install.py')
+        module = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(module)
+        catalog = Path(self.temp.name) / 'catalog'
+        shutil.copytree(SOURCE / 'skills', catalog / 'skills')
+        skill = catalog / 'skills/write/SKILL.md'
+        original = skill.read_text()
+        policy = catalog / 'skills/push/agents/openai.yaml'
+        original_policy = policy.read_text()
+        cases = [original.replace('name: write', 'name: different'),
+                 original.replace('description: ', 'unknown: '),
+                 original.replace('references/editorial.md', 'references/missing.md'),
+                 original + '\n' * 61]
+        import argparse
+        with patch.object(module, 'SOURCE', catalog):
+            for content in cases:
+                skill.write_text(content)
+                with self.assertRaises(ValueError):
+                    module.run(argparse.Namespace(action='install', project=str(self.root), dry_run=False))
+                self.assertFalse((self.root / '.agents').exists())
+            skill.write_text(original)
+            policy.write_text(original_policy.replace('false', 'true'))
+            with self.assertRaises(ValueError):
+                module.run(argparse.Namespace(action='install', project=str(self.root), dry_run=False))
+            self.assertFalse((self.root / '.agents').exists())
+
     def test_skill_catalog_has_valid_frontmatter_and_references(self):
-        names = {'pull', 'audit', 'edit', 'preview', 'pr', 'push', 'check', 'review', 'verify', 'doctor', 'update-skills'}
+        names = {'pull', 'audit', 'edit', 'preview', 'pr', 'push', 'check', 'review', 'verify', 'doctor', 'update-skills', 'design', 'research', 'write'}
         self.assertEqual({p.name for p in (SOURCE / 'skills').iterdir()}, names)
         for name in names:
             text = (SOURCE / 'skills' / name / 'SKILL.md').read_text()

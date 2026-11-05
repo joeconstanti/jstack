@@ -1,11 +1,21 @@
 ---
 name: verify
-description: "Prove scoped web changes in a real browser: rendered routes, mobile and desktop layouts, key interactions and console errors. Use for /verify or browser acceptance checks."
+description: "Verify web behavior or final documents and presentations against acceptance criteria using the actual rendered artifact. Use for /verify or browser acceptance checks."
 ---
 
 # verify
 
 Read `.agents/jstack/rules.md` first and apply it. The goal is rung 4 (observed), or a clear reason why it was not reached.
+
+For documents and presentations, identify the final file/version and acceptance
+criteria. Use an available format-specific tool to render or export it; inspect
+pages/slides for clipped text, table layout, image crops, readable labels and
+broken links. Check the decision or reading path and compare revised facts
+against their sources. Report the exact artifact, pages inspected and gaps.
+Do not start a web server for a document. Plain text/Markdown needs a source and
+structure check; say when visual rendering was not applicable or unavailable.
+
+For web work:
 
 1. **Target.** Use the preview skill to find this checkout's app. List the
    routes that the change touches, plus shared navigation, header and footer.
