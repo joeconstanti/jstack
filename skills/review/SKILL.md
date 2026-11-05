@@ -18,22 +18,18 @@ Read `.agents/jstack/rules.md` first and apply it.
    For prose, trace material claims to sources, check logic and commitments.
    For design, compare with the brief and inspect the rendered artifact when
    available; distinguish observed defects from aesthetic preferences.
-3. **Find the safety fact.** Most risky-looking changes are safe because of one
-   fact. Name it and push it up the proof ladder. A short script or an isolated
-   reproduction beats a paragraph. Do not change the user's checkout or post
-   comments unless asked.
-4. **Grade each finding.**
+3. **Grade each finding.**
    - `blocker`: the intended case is wrong, or data, security, routes or
      deployment break, or the central claim/decision is unsupported.
    - `should`: a defect that affects users or readers inside the intent.
-   - `nit`: rare paths, small costs, style. Keep these few.
+   Omit speculative concerns and items with no concrete impact or correction.
    Also flag scope creep: code, guards or tests that the intent does not need.
    Tag each finding `intent` (wrong or missing behavior) or `standards` (breaks
    a documented convention), so one kind does not hide the other.
-5. **Report findings first**, by severity. Each gives a `file:line`, page/slide
-   or source passage, trigger, impact, proof rung and smallest fix (delete or
-   narrow). Then give the scope reviewed, the safety fact and its rung, checks
-   run and blind spots. With no findings, say "no actionable findings", not
-   "no bugs".
+4. **Report findings first**, by severity. Give each location, trigger, impact,
+   supporting evidence and smallest fix in one concise paragraph unless the
+   user requests another format. Omit routine scope and check summaries when
+   findings alone are requested. Qualify evidence where it affects the finding.
+   With no findings, say "no actionable findings", not "no bugs".
 
 A review is not implementation and not merge approval.

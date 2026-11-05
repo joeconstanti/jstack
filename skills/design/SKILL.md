@@ -24,8 +24,10 @@ Read `.agents/jstack/rules.md` first and apply it.
    the rendered result before extending the direction across the artifact.
 5. **Assess and refine.** Compare against the brief using the reference criteria.
    Rank problems by reader/task impact with an exact location, evidence and
-   proposed correction. Correct the highest-impact issue in scope and inspect
-   again. A source-only critique must label visual judgments as unverified.
+   proposed correction. For critique, select the smallest set of findings that
+   changes the next design decision; combine related observations. In
+   implementation mode, correct the highest-impact issue and inspect again.
+   Label source-only visual judgments unverified once, not in each finding.
 6. **Deliver** the direction or changed artifact, rationale, checks and remaining
    tradeoffs. Record reusable decisions in the project's existing design docs
    when requested or needed for the implementation; do not create a competing

@@ -58,7 +58,10 @@ Do not put private source material in public artifacts or repositories.
 
 ## Outcome
 
-Give each step one result: passed, failed, not run or unavailable. Lead with the
-outcome, then the evidence, then the gaps. Never invent counts, links, scores or
-model names. Write `<REDACTED>` in place of every secret in output, reports,
+Keep the requested format. Leave a margin under hard word limits. Fit evidence
+and necessary caveats inside that format, without routine reporting appendices.
+
+When reporting checks, use passed, failed, not run or unavailable. Lead with the
+outcome, then the evidence and material gaps; do not recap routine workflow steps.
+Never invent counts, links, scores or model names. Write `<REDACTED>` in place of every secret in output, reports,
 commits, PR text and comments.

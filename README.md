@@ -157,13 +157,14 @@ Clone jstack **beside your projects**, then name the target repository explicitl
 ```sh
 git clone https://github.com/joeconstanti/jstack.git
 cd jstack
+git checkout v0.4.0
 python3 install.py install --project /absolute/path/to/your-project --dry-run
 python3 install.py install --project /absolute/path/to/your-project
 python3 install.py check --project /absolute/path/to/your-project
 ```
 
-These commands install the checked-out source. Check out a reviewed release tag
-first when you want a tagged version instead of the default branch.
+These commands install the reviewed `v0.4.0` source. Omit the checkout to use
+the default branch instead.
 
 Reload your coding agent to discover the files. In the target project, invoke
 `/doctor` (Codex: `$doctor`), or run the diagnostic directly:
@@ -202,7 +203,10 @@ when FTP or another pipeline uploads the repository root.
 | **Other coding agents** | Read the canonical SKILL.md directly, or use their supported project-local skill discovery |
 
 The workflows use ordinary Markdown and adapt to the tools an agent has. This is
-portable instruction support, **not a claim that every client has been exercised**.
+portable instruction support. The [v0.4.0 validation report](docs/release-0.4.0.md)
+records real CLI smoke checks for Codex, Claude and Cursor, Gemini discovery,
+Cursor output-format limitations and the remaining Gemini/OpenCode runtime gaps.
+These narrow checks do not certify every command or IDE menu/reload behavior.
 Doctor reports installation integrity through `ok` and `problems`; its
 `workflows` field separately reports whether audit/edit instructions are available.
 Runtime readiness remains unverified. Missing optional specialists do not make a

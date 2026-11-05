@@ -1,0 +1,112 @@
+{
+  "date": "2026-11-05",
+  "source_base_commit": "2116d4e1c31e0dfd337c5d4ef895abfe539a26a1",
+  "final_native_source": "v0.4.0 candidate with format-respecting shared/review/design revisions; Gemini/OpenCode checks used the base source",
+  "input_file": "Expected delivery: six weeks after client photographs arrive. Estimate: £4,000 excluding hosting. No guaranteed deadline.\n",
+  "prompt": "Read notes.txt and rewrite it as one sentence for a client proposal. Preserve every commercial qualification. Do not edit files or use other workflows. End with SMOKE-ARGO-19 unchanged.",
+  "clients": [
+    {
+      "client": "codex",
+      "version": "0.166.0",
+      "invocation": "$write",
+      "exit": 0,
+      "command_or_skill_loaded": true,
+      "reference_loaded": true,
+      "input_read": true,
+      "commercial_qualifications_preserved": true,
+      "requested_final_marker_is_last": true,
+      "trace_reads": [
+        "'cat .agents/jstack/rules.md .agents/skills/write/SKILL.md .agents/skills/write/references/editorial.md notes.txt'"
+      ],
+      "output": "Delivery is expected six weeks after receipt of the client’s photographs, with no guaranteed deadline, at an estimated cost of £4,000 excluding hosting — SMOKE-ARGO-19"
+    },
+    {
+      "client": "claude",
+      "version": "2.1.317",
+      "invocation": "/write",
+      "exit": 0,
+      "command_or_skill_loaded": true,
+      "reference_loaded": true,
+      "input_read": true,
+      "commercial_qualifications_preserved": true,
+      "requested_final_marker_is_last": true,
+      "trace_reads": [
+        "notes.txt",
+        ".agents/jstack/rules.md",
+        ".claude/skills/write/references/editorial.md"
+      ],
+      "output": "We expect to deliver the work six weeks after your photographs arrive, at an estimated cost of £4,000 excluding hosting, although this timing is an expectation rather than a guaranteed deadline. SMOKE-ARGO-19"
+    },
+    {
+      "client": "cursor",
+      "version": "2026.10.22-27dcf5f",
+      "invocation": "/write",
+      "exit": 0,
+      "command_or_skill_loaded": true,
+      "reference_loaded": true,
+      "input_read": true,
+      "commercial_qualifications_preserved": true,
+      "requested_final_marker_is_last": false,
+      "trace_reads": [
+        "notes.txt",
+        ".agents/jstack/rules.md",
+        ".agents/skills/write/references/editorial.md"
+      ],
+      "output": "Here's the sentence, based on the three facts in `notes.txt`:\n\n> We expect to deliver the work six weeks after we receive your photographs, at an estimated cost of £4,000 excluding hosting, although we cannot guarantee a deadline. SMOKE-ARGO-19\n\nI checked it against the notes and all three qualifications are still there:\n- **Delivery time:** six weeks is \"expected\", and the clock starts only once your photographs arrive.\n- **Price:** £4,000 is an \"estimate\" and doesn't include hosting.\n- **Deadline:** the line that there's no guaranteed deadline is kept.\n\nNothing new was added. No files were changed."
+    },
+    {
+      "client": "gemini",
+      "version": "0.66.0",
+      "discovery": "All 14 project skills listed with GEMINI_CLI_TRUST_WORKSPACE=true for that process only",
+      "generation": "initial /write headless attempt timed out after 150 seconds; no final answer; not a runtime pass",
+      "reference_loaded": null,
+      "list_exit": 0,
+      "failed_attempts": [
+        "untrusted list skipped workspace skills",
+        "--skip-trust before subcommand rejected --all",
+        "--skip-trust after subcommand rejected skip-trust"
+      ],
+      "user_settings_modified": false
+    },
+    {
+      "client": "opencode",
+      "version": "2.2.5",
+      "attempt": "opencode",
+      "exit": 0,
+      "native_skill_loaded": false,
+      "output": "We propose delivery six weeks after we receive the client photographs, at an estimated cost of £4,000 excluding hosting, with no guaranteed deadline — SMOKE-ARGO-19",
+      "skill_tool_attempts": [],
+      "note": "Plain /write run did not load the skill. Explicit native skill-tool request failed to load write. Ordinary prose output is not proof of skill compatibility."
+    },
+    {
+      "client": "opencode",
+      "version": "2.2.5",
+      "attempt": "opencode-explicit-skill",
+      "exit": 0,
+      "native_skill_loaded": false,
+      "output": "The native skill tool could not load `write`.\n\nWe propose delivery in an estimated six weeks after we receive the client photographs, at an estimated cost of £4,000 excluding hosting, with no guaranteed deadline — SMOKE-ARGO-19",
+      "skill_tool_attempts": [
+        {
+          "input": {
+            "id": "write"
+          },
+          "status": "error",
+          "error": "Unable to load skill write"
+        }
+      ],
+      "note": "Plain /write run did not load the skill. Explicit native skill-tool request failed to load write. Ordinary prose output is not proof of skill compatibility."
+    }
+  ],
+  "source_file_sha256": {
+    "skills/write/SKILL.md": "57a3ef0976e1dbf5b37c6caa957a0d0af09c66fc79d46fcb35ccc8a0a4301a18",
+    "shared/rules.md": "58c864a985666e98f9b0cb7462162b66b46b91acfffbb469e9a8cf6c6f256b02",
+    "skills/write/references/editorial.md": "cfa82bdc7a34837c80b362fdcebfe68b46fad7f8c595a95bea661f403a1dd29c"
+  },
+  "initial_formatting_failure": [
+    {
+      "client": "cursor",
+      "output": "The project is estimated at £4,000, excluding hosting, and delivery is expected six weeks after we receive your photographs, although we cannot guarantee a deadline. SMOKE-ARGO-19\n\nI checked this sentence against `notes.txt` and all three qualifications are still there: the price is an estimate, hosting is not included, and the six weeks is an expectation that only starts once the photographs arrive, with no guaranteed deadline. I didn't add any facts. No files were changed.",
+      "requested_final_marker_is_last": false
+    }
+  ]
+}

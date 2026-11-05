@@ -1,0 +1,879 @@
+{
+  "date": "2026-11-05",
+  "word_count_method": "len(output.split()); whitespace-separated tokens, including Markdown table separators",
+  "model_note": "Claude Code default resolved to claude-sonnet-5-5 with auxiliary claude-haiku-5-5 activity in all modelUsage records; no model or effort override; fresh process per answer and judge; sampling defaults unchanged",
+  "rounds": [
+    {
+      "round": 1,
+      "seed": 20261105,
+      "plan": {
+        "source_commit": "2116d4e1c31e0dfd337c5d4ef895abfe539a26a1",
+        "client": "Claude Code 2.1.317",
+        "model": "client default; resolved model recorded from result modelUsage",
+        "constraints": "fresh process per answer; safe mode; no tools; no session persistence; no MCP; source-only tasks; no renderer",
+        "cases": [
+          {
+            "id": "research",
+            "skill": "research",
+            "prompt": "Should we increase advertising spend based on these supplied results? January: £100 spend, 10 leads. February: £300 spend, 15 leads. The management summary says: \"Lead volume grew 50%, so efficiency improved 50%.\" Recommend a decision using only these figures. Keep the answer under 220 words."
+          },
+          {
+            "id": "write",
+            "skill": "write",
+            "prompt": "Make this client proposal concise, preserving every commercial term: We expect delivery in six weeks, dependent on the client supplying approved photographs. Estimate £4,000, excluding hosting. The optional maintenance package costs £75 per month and can be cancelled with 30 days notice. Do not add claims or commitments. Return only the revised proposal."
+          },
+          {
+            "id": "design",
+            "skill": "design",
+            "prompt": "Critique a presentation slide using only this description: 12pt body text, an 8pt source note, three charts and a 90-word paragraph. Audience: a room of 40. The existing navy and cream identity must remain. No slide file, screenshot or renderer is available. Give the highest-priority improvements, without implementing changes. Keep the answer under 220 words."
+          },
+          {
+            "id": "review",
+            "skill": "review",
+            "prompt": "Review this existing document and supplied Python function. Return actionable findings only, with location, severity, trigger and smallest correction. Do not edit anything. Proposal page 2 says: \"Delivery is guaranteed in six weeks.\" The approved brief says: \"Expected delivery in six weeks after approved photographs arrive.\" Code at pricing.py:1-2 is: def cost_per_lead(spend, leads): return spend // leads. Callers pass nonnegative decimal spend and positive integer leads, and require the unrounded cost per lead. There is no Git diff. Keep the answer under 250 words."
+          }
+        ],
+        "limitations": "single sample per condition per case; tests instruction packet rather than automatic discovery; no native rendered artifact or executing code"
+      },
+      "trials": [
+        {
+          "id": "research-A",
+          "exit": 0,
+          "is_error": false,
+          "output": "**Recommendation: do not increase spend on this evidence.** Hold at the current level and test further.\n\n**The summary is wrong.** Leads grew 50% (10 → 15), but spend grew 200% (£100 → £300). Efficiency fell:\n\n| | Jan | Feb |\n|---|---|---|\n| Cost per lead | £10.00 | £20.00 |\n| Leads per £100 | 10 | 5 |\n\nCost per lead doubled, so efficiency dropped 50%, not improved.\n\n**Marginal return is worse still.** The extra £200 bought 5 extra leads, about £40 per additional lead, four times the January cost.\n\n**Limits of the evidence:**\n- Two data points, one month each. Seasonality or noise could explain the change.\n- No data on lead quality, conversion to sales, or revenue. If a lead is worth more than £20 (or £40 at the margin), more spend could still pay off, but these figures don't show that.\n- Channels, targeting and campaigns are unknown.\n\n**What would change my view:** evidence that lead value comfortably exceeds the marginal £40 cost, or a repeat test showing cost per lead stabilising at higher spend.\n\n**Next step:** correct the management summary, then run a controlled test, such as a modest budget increase on the best-performing campaign, tracking cost per lead and lead-to-sale conversion.",
+          "models": [
+            "claude-haiku-5-5",
+            "claude-sonnet-5-5"
+          ],
+          "seconds": 10.8,
+          "packet_sha256": "3f9dbaea9dad5267e6ee1294bd4f008849ab0d6b1d35ac6b990b2b7e67e727a1",
+          "condition": "jstack",
+          "word_count": 208
+        },
+        {
+          "id": "research-B",
+          "exit": 0,
+          "is_error": false,
+          "output": "**Recommendation: do not increase spend yet.** Hold at, or return towards, the current level and test further.\n\n**The summary is wrong.** Lead volume did grow 50% (10 → 15), but spend grew 200% (£100 → £300). Efficiency is leads per pound, or its inverse, cost per lead:\n\n| | Spend | Leads | Cost per lead |\n|---|---|---|---|\n| January | £100 | 10 | £10.00 |\n| February | £300 | 15 | £20.00 |\n\nCost per lead doubled, so efficiency **fell by 50%**, not improved.\n\n**Marginal view:** the extra £200 bought only 5 additional leads, or £40 per extra lead, four times January's cost per lead. That suggests sharply diminishing returns.\n\n**Caveats:** two data points can't show a trend. Seasonality, lead quality, conversion rate, and value per lead are unknown. If a lead is worth more than £20 (or £40 at the margin), the extra spend could still be profitable, but these figures don't show that.\n\n**Next step:** correct the management summary, then run a controlled test, such as a moderate increase to around £150–£200, while tracking cost per lead and conversion to sales before committing more budget.",
+          "models": [
+            "claude-haiku-5-5",
+            "claude-sonnet-5-5"
+          ],
+          "seconds": 12.4,
+          "packet_sha256": null,
+          "condition": "control",
+          "word_count": 190
+        },
+        {
+          "id": "write-A",
+          "exit": 0,
+          "is_error": false,
+          "output": "We expect to deliver in six weeks, provided the client supplies approved photographs. The estimate is £4,000, excluding hosting. An optional maintenance package is available at £75 per month, cancellable with 30 days' notice.",
+          "models": [
+            "claude-haiku-5-5",
+            "claude-sonnet-5-5"
+          ],
+          "seconds": 7.2,
+          "packet_sha256": "2d93210acc3da9fb24f8e18a3bde0938f2472361cfff2e8195a25aee30868028",
+          "condition": "jstack",
+          "word_count": 34
+        },
+        {
+          "id": "write-B",
+          "exit": 0,
+          "is_error": false,
+          "output": "Delivery is expected within six weeks, provided the client supplies approved photographs. The estimate is £4,000, excluding hosting. An optional maintenance package is available at £75 per month, cancellable with 30 days' notice.",
+          "models": [
+            "claude-haiku-5-5",
+            "claude-sonnet-5-5"
+          ],
+          "seconds": 7.0,
+          "packet_sha256": null,
+          "condition": "control",
+          "word_count": 33
+        },
+        {
+          "id": "design-A",
+          "exit": 0,
+          "is_error": false,
+          "output": "**Source-only critique. All visual judgments are unverified; no slide, screenshot or render was available.**\n\n**Highest priority**\n\n1. **Cut the load on the slide.** Three charts plus a 90-word paragraph compete for attention, so a room of 40 has no obvious first read. Pick the one claim the slide makes. Keep the chart that proves it, and move the other two to a follow-up slide or appendix.\n\n2. **Fix text size for the back row.** 12pt body text is too small to read at presentation distance, and the 8pt source note is likely unreadable. Replace the 90-word paragraph with a headline stating the takeaway plus two or three short lines, at a size the back row can read (roughly 24pt or larger is a common target). Keep the source note small but legible, or move it to the speaker notes, with the full citation in the handout.\n\n3. **Make chart labels readable at room scale.** Chart axes, legends and data labels are probably set to match the body text, so likely too small. Label the key series directly and drop the legends. Annotate the one data point that matters.\n\n4. **Use the navy and cream for hierarchy.** Keep the identity. Use navy for the headline and key series, and a muted tint for context. Check contrast with a tool, since I can't verify the ratio from a description.\n\n**Acceptance check:** render the slide and view it at projected size from the back of a room, or at an equivalent reduced scale.",
+          "models": [
+            "claude-haiku-5-5",
+            "claude-sonnet-5-5"
+          ],
+          "seconds": 11.6,
+          "packet_sha256": "5afd2687a1bf6ef2869d5bf448728506aec3b2f9b0104606d55cacb331717fdc",
+          "condition": "jstack",
+          "word_count": 250
+        },
+        {
+          "id": "design-B",
+          "exit": 0,
+          "is_error": false,
+          "output": "**Caveat:** this is based only on your description, so I can't judge layout, contrast, or chart quality.\n\n**Highest-priority improvements**\n\n1. **Cut the 90-word paragraph.** A room of 40 won't read it while you speak. Reduce it to one headline sentence (about 15 words) and move the detail to speaker notes or a handout.\n\n2. **Raise the text size.** 12pt is unreadable from the back of a room. Aim for 24pt or larger for body text, and at least 18pt for anything secondary. If the content won't fit, that's a sign the slide is carrying too much.\n\n3. **Reduce three charts to one.** Show the single chart that supports the headline and split the others across separate slides. Three charts compete for attention and each will be too small to read at that distance.\n\n4. **Make the title state the takeaway.** For example, \"Revenue grew 18% in Q3\" rather than \"Q3 revenue.\" The audience should get the point in about five seconds.\n\n5. **Handle the 8pt source note.** It will be illegible in the room, but sources still matter. Increase it to about 12pt, and keep the full citation in the notes or handout.\n\n6. **Preserve the identity while checking contrast.** Keep navy and cream. Use navy text on cream, or cream text on navy, for body copy and chart labels, and reserve any accent color for the key data point.\n\n**Verify once rendered:** legibility from the back row, and contrast on projectors, which often wash out cream tones.",
+          "models": [
+            "claude-haiku-5-5",
+            "claude-sonnet-5-5"
+          ],
+          "seconds": 12.4,
+          "packet_sha256": null,
+          "condition": "control",
+          "word_count": 248
+        },
+        {
+          "id": "review-A",
+          "exit": 0,
+          "is_error": false,
+          "output": "**Findings**\n\n1. **Proposal p.2: \"Delivery is guaranteed in six weeks.\"** Severity: High (contractual/commercial risk).\n   - Trigger: Approved photographs arrive late, or any delay outside the studio's control. The sentence promises an unconditional guarantee, which the brief never approved.\n   - Smallest correction: Change to \"Expected delivery in six weeks after approved photographs arrive.\" This matches the brief exactly.\n\n2. **pricing.py:1-2, `return spend // leads`.** Severity: High (wrong results).\n   - Trigger: Any call where spend isn't an exact multiple of leads. Example: `cost_per_lead(10.50, 4)` returns `2.0` instead of `2.625`. Floor division discards the fractional part, and callers require the unrounded value.\n   - Smallest correction: Use true division: `return spend / leads`.\n\n3. **pricing.py:1-2, decimal type.** Severity: Low, conditional.\n   - Trigger: If \"decimal spend\" means `decimal.Decimal`, `Decimal / int` works and stays exact. If it means `float`, results carry normal float imprecision, which is acceptable only if callers tolerate it. No code change is needed with `Decimal`. Confirm which type callers pass.\n\nLeads are positive per the caller contract, so division by zero isn't a finding. I didn't edit anything.",
+          "models": [
+            "claude-haiku-5-5",
+            "claude-sonnet-5-5"
+          ],
+          "seconds": 12.2,
+          "packet_sha256": null,
+          "condition": "control",
+          "word_count": 177
+        },
+        {
+          "id": "review-B",
+          "exit": 0,
+          "is_error": false,
+          "output": "**Findings**\n\n1. **blocker (intent), Proposal p.2, \"Delivery is guaranteed in six weeks.\"**\n   - Trigger: The approved brief says \"Expected delivery in six weeks after approved photographs arrive.\" The proposal turns an estimate into a guarantee and drops the precondition on approved photographs.\n   - Impact: It creates a commitment the brief never approved. Any photo delay, or a client who reads the six weeks as running from signing, becomes a breach claim.\n   - Proof: rung 2 (cited from the two quoted texts). I haven't seen the rest of the proposal.\n   - Smallest fix: Restore the brief's wording: \"Expected delivery in six weeks after approved photographs arrive.\"\n\n2. **blocker (intent), pricing.py:1-2, `return spend // leads`**\n   - Trigger: `//` is floor division. With spend `10.00` and leads `3`, it returns `3.0`, not `3.3333…`. With spend `5` and leads `2`, it returns `2` instead of `2.5`.\n   - Impact: Callers need the unrounded cost per lead. Every result with a remainder is silently understated, so cost per lead is wrong in reports and decisions.\n   - Proof: rung 2 (cited from the code and the stated caller contract). I haven't run it. Floor division on these inputs is standard Python semantics.\n   - Smallest fix: Change `//` to `/`. If spend is a `Decimal`, `Decimal / int` stays exact to the context precision and needs no other change. Don't mix `float` and `Decimal`.\n\n**Scope reviewed:** the one proposal sentence and the two-line function, against the brief quote and the stated caller contract.\n\n**Safety fact:** leads is guaranteed positive, so a zero-division guard isn't needed. Adding one would be scope creep. This rests on the caller's statement (rung 1), not on anything I verified.\n\n**Blind spots:** I haven't seen the rest of the proposal, the callers or any tests. I ran nothing.",
+          "models": [
+            "claude-haiku-5-5",
+            "claude-sonnet-5-5"
+          ],
+          "seconds": 13.5,
+          "packet_sha256": "1cec2526d4eece3dd7593d38691916b8beb287a91fb7dd7c49b390396073823f",
+          "condition": "jstack",
+          "word_count": 294
+        }
+      ],
+      "blind_judgment": [
+        {
+          "case": "research",
+          "A": {
+            "completion": true,
+            "support": true,
+            "intent": true,
+            "restraint": true,
+            "reason": "Recommends holding spend and corrects the summary. Cost per lead doubled and the marginal cost is £40 per extra lead, both correct. Roughly 190 words, under the limit. Passing mentions of campaigns and channels are hedged as unknown."
+          },
+          "B": {
+            "completion": true,
+            "support": true,
+            "intent": true,
+            "restraint": true,
+            "reason": "Same correct recommendation and arithmetic: \"efficiency fell by 50%\" and £40 per extra lead. Under the word limit. The suggested £150–£200 test range is a reasonable judgment, not a fabricated observation."
+          },
+          "winner": "tie",
+          "reason": "Both reach the same correct decision from the figures, correct the management summary and stay within length. No material difference."
+        },
+        {
+          "case": "write",
+          "A": {
+            "completion": true,
+            "support": true,
+            "intent": true,
+            "restraint": true,
+            "reason": "Keeps six weeks, the photograph dependency, £4,000 excluding hosting, £75 per month and 30 days' notice. \"We expect to deliver in six weeks\" keeps the original expectation wording."
+          },
+          "B": {
+            "completion": true,
+            "support": true,
+            "intent": true,
+            "restraint": true,
+            "reason": "All commercial terms are preserved. \"Expected within six weeks\" is a slight wording shift towards a deadline, but it is still framed as an expectation and adds no new commitment."
+          },
+          "winner": "tie",
+          "reason": "Both preserve every term and add no commitments. The \"in\" versus \"within\" difference is too small to be material."
+        },
+        {
+          "case": "design",
+          "A": {
+            "completion": false,
+            "support": true,
+            "intent": true,
+            "restraint": true,
+            "reason": "The prioritised critique is useful, but at about 250 words it is over the 220 limit. It states that \"All visual judgments are unverified\" and keeps navy and cream. It also recommends running an acceptance check, which is a suggestion, not an action taken."
+          },
+          "B": {
+            "completion": false,
+            "support": true,
+            "intent": true,
+            "restraint": true,
+            "reason": "Also over the 220-word limit, at about 245 words. It carries the source-only caveat (\"I can't judge layout, contrast, or chart quality\") and keeps the navy and cream identity. The flat claim \"12pt is unreadable\" is a design judgment, not a fabricated observation."
+          },
+          "winner": "tie",
+          "reason": "Both give sound, caveated critiques and both exceed the word limit by similar amounts. No material difference."
+        },
+        {
+          "case": "review",
+          "A": {
+            "completion": true,
+            "support": true,
+            "intent": true,
+            "restraint": true,
+            "reason": "Both real defects are found with location, severity, trigger and smallest fix. The examples are correct: 10.50//4 gives 2.0 and the true value is 2.625. It stays within about 225 words and states \"I didn't edit anything.\" Finding 3 (Decimal versus float) is conditional and says \"No code change is needed\", so it is weak as an actionable finding."
+          },
+          "B": {
+            "completion": false,
+            "support": true,
+            "intent": true,
+            "restraint": true,
+            "reason": "Finds the same two defects with correct examples, but runs to roughly 340 words against a 250 limit. It also adds non-finding sections (\"Safety fact\", \"Blind spots\") and proof-rung jargon, although the task asked for actionable findings only."
+          },
+          "winner": "A",
+          "reason": "A meets the length limit and keeps to findings with a location, severity, trigger and fix. B finds the same two defects but exceeds the word limit and adds non-finding commentary."
+        }
+      ]
+    },
+    {
+      "round": 2,
+      "seed": 20261106,
+      "plan": {
+        "iteration": "format-respecting revision",
+        "source_commit": "2116d4e1c31e0dfd337c5d4ef895abfe539a26a1",
+        "client": "Claude Code 2.1.317",
+        "model": "client default; resolved model recorded from result modelUsage",
+        "constraints": "fresh process per answer; safe mode; no tools; no session persistence; no MCP; source-only tasks; no renderer",
+        "cases": [
+          {
+            "id": "research",
+            "skill": "research",
+            "prompt": "Should we increase advertising spend based on these supplied results? January: £100 spend, 10 leads. February: £300 spend, 15 leads. The management summary says: \"Lead volume grew 50%, so efficiency improved 50%.\" Recommend a decision using only these figures. Keep the answer under 220 words."
+          },
+          {
+            "id": "write",
+            "skill": "write",
+            "prompt": "Make this client proposal concise, preserving every commercial term: We expect delivery in six weeks, dependent on the client supplying approved photographs. Estimate £4,000, excluding hosting. The optional maintenance package costs £75 per month and can be cancelled with 30 days notice. Do not add claims or commitments. Return only the revised proposal."
+          },
+          {
+            "id": "design",
+            "skill": "design",
+            "prompt": "Critique a presentation slide using only this description: 12pt body text, an 8pt source note, three charts and a 90-word paragraph. Audience: a room of 40. The existing navy and cream identity must remain. No slide file, screenshot or renderer is available. Give the highest-priority improvements, without implementing changes. Keep the answer under 220 words."
+          },
+          {
+            "id": "review",
+            "skill": "review",
+            "prompt": "Review this existing document and supplied Python function. Return actionable findings only, with location, severity, trigger and smallest correction. Do not edit anything. Proposal page 2 says: \"Delivery is guaranteed in six weeks.\" The approved brief says: \"Expected delivery in six weeks after approved photographs arrive.\" Code at pricing.py:1-2 is: def cost_per_lead(spend, leads): return spend // leads. Callers pass nonnegative decimal spend and positive integer leads, and require the unrounded cost per lead. There is no Git diff. Keep the answer under 250 words."
+          }
+        ],
+        "limitations": "single sample per condition per case; tests instruction packet rather than automatic discovery; no native rendered artifact or executing code"
+      },
+      "trials": [
+        {
+          "id": "research-A",
+          "exit": 0,
+          "is_error": false,
+          "output": "**Recommendation: don't increase spend yet.** The data doesn't support the summary's claim, and the evidence is too thin to justify scaling.\n\n**What the figures show**\n- Cost per lead: January £10 (£100 ÷ 10); February £20 (£300 ÷ 15). Cost per lead **doubled**, so efficiency got worse, not 50% better.\n- Leads grew 50%, but spend grew 200%.\n- Marginal cost: the extra £200 produced 5 extra leads, about £40 per additional lead, four times January's cost.\n\n**Why the summary is wrong**\nIt measures lead volume only and ignores spend. Volume rising 50% is not efficiency rising 50%.\n\n**Limits**\n- Two data points, one month each. Seasonality, campaign changes or random variation could explain part of this.\n- No lead quality, conversion or revenue data, so I can't say whether £20 or £40 per lead is profitable.\n\n**Decision**\nHold spend at the current level, or return toward January's. Scale only if lead value clearly exceeds roughly £20 per lead, and ideally the £40 marginal cost.\n\n**What would change this**\nEvidence that February's leads convert to customers at a much higher rate, or a controlled test showing the cost per lead falls with a different channel or creative.\n\n**Next step:** Ask for lead-to-customer conversion and revenue per lead, and correct the management summary.",
+          "models": [
+            "claude-haiku-5-5",
+            "claude-sonnet-5-5"
+          ],
+          "seconds": 8.4,
+          "packet_sha256": "942edcb77649fd4077ecd0108f3d941e0600ae08ec3ce2ec3236d89cc7fd4f33",
+          "condition": "jstack",
+          "word_count": 212
+        },
+        {
+          "id": "research-B",
+          "exit": 0,
+          "is_error": false,
+          "output": "**Recommendation: No, don't increase spend yet.** The data doesn't support the management summary's claim.\n\n**What the figures show**\n\n| | Spend | Leads | Cost per lead |\n|---|---|---|---|\n| January | £100 | 10 | £10.00 |\n| February | £300 | 15 | £20.00 |\n\n- Leads grew 50%, but spend grew 200%.\n- Cost per lead doubled (+100%), so efficiency got worse, not 50% better.\n- The marginal result is poor: the extra £200 bought only 5 extra leads, or £40 per additional lead, four times January's cost.\n\n**Why the summary is wrong**\n\nIt treats lead growth as efficiency. Efficiency is output relative to input, and here the input grew much faster than the output.\n\n**Caveats**\n\n- This is two data points. Seasonality, campaign changes, or lead quality could explain the gap.\n- Lead value is unknown. If a lead is worth well over £20-£40 in revenue, the extra spend could still pay off.\n\n**Suggested next step**\n\nHold spend at current levels, or return toward January's level, and find out why cost per lead rose. Revisit scaling only if cost per lead falls, or if lead-to-sale value shows even the £40 marginal cost is profitable.",
+          "models": [
+            "claude-haiku-5-5",
+            "claude-sonnet-5-5"
+          ],
+          "seconds": 7.4,
+          "packet_sha256": null,
+          "condition": "control",
+          "word_count": 198
+        },
+        {
+          "id": "write-A",
+          "exit": 0,
+          "is_error": false,
+          "output": "We expect to deliver in six weeks, provided you supply approved photographs. The estimate is £4,000, excluding hosting. Optional maintenance is £75 per month, cancellable with 30 days' notice.",
+          "models": [
+            "claude-haiku-5-5",
+            "claude-sonnet-5-5"
+          ],
+          "seconds": 3.9,
+          "packet_sha256": "729756129aa5d9792a2e1359c8c527d8387b533a4cb9f55758c47ede8a98ae8f",
+          "condition": "jstack",
+          "word_count": 29
+        },
+        {
+          "id": "write-B",
+          "exit": 0,
+          "is_error": false,
+          "output": "Delivery is expected in six weeks, provided the client supplies approved photographs. The estimate is £4,000, excluding hosting. An optional maintenance package is available at £75 per month, cancellable with 30 days' notice.",
+          "models": [
+            "claude-haiku-5-5",
+            "claude-sonnet-5-5"
+          ],
+          "seconds": 3.8,
+          "packet_sha256": null,
+          "condition": "control",
+          "word_count": 33
+        },
+        {
+          "id": "design-A",
+          "exit": 0,
+          "is_error": false,
+          "output": "**Source-only critique, from the description alone. All visual judgments are unverified; nothing was rendered.**\n\n**Priority findings**\n\n1. **Slide tries to do too much.** Three charts plus a 90-word paragraph compete for a room of 40. Readers must choose between reading and looking. Split into one point per slide, or keep the single chart that carries the argument and move the others to a backup or handout.\n\n2. **Text is too small for the room.** 12pt body and an 8pt source note are likely illegible from the back of a 40-person room. Raise body text substantially (often 24pt+ is a reasonable target) and the source note to a legible minimum, around 12-14pt. Verify at presentation size.\n\n3. **The paragraph won't be read while someone speaks.** Cut the 90 words to a headline claim plus at most two short supporting lines. Put the detail in speaker notes or a handout.\n\n4. **Charts need labels readable at size.** Check axis labels, legends and series colours separately. Direct-label series rather than relying on a legend.\n\n5. **Preserve the navy and cream identity.** Use navy text on cream for body, and confirm contrast with a tool before claiming a ratio. Use navy tints for chart series, with one accent for emphasis, if the brand allows it.\n\n**Gap:** Layout, spacing, alignment and contrast need a rendered check, which wasn't possible here.",
+          "models": [
+            "claude-haiku-5-5",
+            "claude-sonnet-5-5"
+          ],
+          "seconds": 7.2,
+          "packet_sha256": "75b54a5d002b2d61f3c5414a355b897c2f0d2d8c01db4b1ce328f4c49c37cde0",
+          "condition": "jstack",
+          "word_count": 225
+        },
+        {
+          "id": "design-B",
+          "exit": 0,
+          "is_error": false,
+          "output": "**Caveat:** this critique is based only on your description, so I can't judge layout, contrast, or chart quality.\n\n**Highest-priority improvements**\n\n1. **Cut the 90-word paragraph.** For a room of 40, nobody reads and listens at once. Reduce it to one takeaway headline (about 10–15 words) and move detail to speaker notes or a handout.\n\n2. **Raise type sizes.** 12pt body text won't be legible from the back of a room of 40. Aim for roughly 24pt or more for body, 18pt minimum for anything essential. The 8pt source note is fine to keep small, but about 10–12pt is more realistic if it must be read at all.\n\n3. **Reduce three charts to one.** Three charts compete for attention and force each to be small. Keep the chart that best supports the single message, and split the others onto separate slides, or use them as backup.\n\n4. **Make the message the hierarchy.** Use an action title stating the conclusion, then the chart, then the source. Direct the eye with an annotation or highlighted data point rather than relying on the viewer to interpret.\n\n5. **Use the navy and cream deliberately.** Keep the identity: navy for text and key data, cream as background, and one accent for emphasis. Check contrast, especially for small text on cream.",
+          "models": [
+            "claude-haiku-5-5",
+            "claude-sonnet-5-5"
+          ],
+          "seconds": 6.4,
+          "packet_sha256": null,
+          "condition": "control",
+          "word_count": 214
+        },
+        {
+          "id": "review-A",
+          "exit": 0,
+          "is_error": false,
+          "output": "**Findings**\n\n1. **blocker (intent), Proposal p.2: \"Delivery is guaranteed in six weeks.\"**\n   - Trigger: The approved brief says \"Expected delivery in six weeks after approved photographs arrive.\" The proposal turns an estimate into a guarantee and drops the dependency on approved photographs.\n   - Impact: This creates a commitment the client never approved. A late photo approval would make the studio miss a promised date.\n   - Proof: Rung 2, comparing the two quoted texts. I have not seen the full proposal or brief.\n   - Smallest fix: Use the brief's wording: \"Expected delivery in six weeks after approved photographs arrive.\"\n\n2. **blocker (intent), pricing.py:2: `return spend // leads`**\n   - Trigger: `//` is floor division. For example, `cost_per_lead(10.5, 4)` returns `2.0` instead of `2.625`. Any spend smaller than the lead count returns `0.0`.\n   - Impact: Callers require the unrounded cost per lead. This code silently understates cost, and the error is largest at small values.\n   - Proof: Rung 2, from Python's floor-division semantics and the stated caller contract. I did not run it.\n   - Smallest fix: Change `//` to `/`.\n\n3. **should (intent), pricing.py:1-2: decimal inputs**\n   - Trigger: If \"decimal\" means `decimal.Decimal`, `Decimal / int` works and stays exact. If it means `float`, `/` returns a float. Either works with the fix above.\n   - Impact: None if callers keep to the stated contract.\n   - Smallest fix: No change needed. Only confirm which type callers pass if exact decimal results matter. Don't add a zero-leads guard, because callers guarantee positive leads.\n\n**Blind spots:** I checked only the two quoted excerpts, not the rest of the proposal or any tests.",
+          "models": [
+            "claude-haiku-5-5",
+            "claude-sonnet-5-5"
+          ],
+          "seconds": 8.1,
+          "packet_sha256": "6a3edfcedff2f0a8c2bd097b0f3ee81395724f1504b4c47cfe714e3f14753773",
+          "condition": "jstack",
+          "word_count": 265
+        },
+        {
+          "id": "review-B",
+          "exit": 0,
+          "is_error": false,
+          "output": "**Findings**\n\n1. **Proposal p.2: \"Delivery is guaranteed in six weeks.\"**\n   - Severity: High (contractual/commercial risk)\n   - Trigger: Client delivers approved photographs late, or never. The proposal still promises six weeks unconditionally, contradicting the approved brief, which says \"expected\" and starts the clock when approved photographs arrive.\n   - Smallest correction: Change to \"Expected delivery is six weeks after approved photographs arrive.\"\n\n2. **pricing.py:1-2: `spend // leads`**\n   - Severity: High (wrong results)\n   - Trigger: Any call where spend isn't an exact multiple of leads. For example, `cost_per_lead(Decimal(\"10.50\"), 4)` returns `2` instead of `2.625`. Floor division discards the fractional part, which violates the callers' requirement for the unrounded cost.\n   - Smallest correction: Use true division: `return spend / leads`. With Decimal spend and int leads, this returns an unrounded Decimal quotient (subject to the Decimal context's precision, default 28 digits).\n\n**Notes**\n- Zero leads isn't a concern, since callers guarantee positive integers.\n- If any caller passes `float` spend instead of `Decimal`, `/` still works but gives binary-float results. You said decimal, so I assumed `Decimal`.\n- I reviewed only the text you supplied and did not open any files.",
+          "models": [
+            "claude-haiku-5-5",
+            "claude-sonnet-5-5"
+          ],
+          "seconds": 6.5,
+          "packet_sha256": null,
+          "condition": "control",
+          "word_count": 187
+        }
+      ]
+    },
+    {
+      "round": 3,
+      "seed": 20261107,
+      "plan": {
+        "iteration": "subtract redundant review reporting and speculative findings",
+        "source_commit": "2116d4e1c31e0dfd337c5d4ef895abfe539a26a1",
+        "client": "Claude Code 2.1.317",
+        "model": "client default; resolved model recorded from result modelUsage",
+        "constraints": "fresh process per answer; safe mode; no tools; no session persistence; no MCP; source-only tasks; no renderer",
+        "cases": [
+          {
+            "id": "research",
+            "skill": "research",
+            "prompt": "Should we increase advertising spend based on these supplied results? January: £100 spend, 10 leads. February: £300 spend, 15 leads. The management summary says: \"Lead volume grew 50%, so efficiency improved 50%.\" Recommend a decision using only these figures. Keep the answer under 220 words."
+          },
+          {
+            "id": "write",
+            "skill": "write",
+            "prompt": "Make this client proposal concise, preserving every commercial term: We expect delivery in six weeks, dependent on the client supplying approved photographs. Estimate £4,000, excluding hosting. The optional maintenance package costs £75 per month and can be cancelled with 30 days notice. Do not add claims or commitments. Return only the revised proposal."
+          },
+          {
+            "id": "design",
+            "skill": "design",
+            "prompt": "Critique a presentation slide using only this description: 12pt body text, an 8pt source note, three charts and a 90-word paragraph. Audience: a room of 40. The existing navy and cream identity must remain. No slide file, screenshot or renderer is available. Give the highest-priority improvements, without implementing changes. Keep the answer under 220 words."
+          },
+          {
+            "id": "review",
+            "skill": "review",
+            "prompt": "Review this existing document and supplied Python function. Return actionable findings only, with location, severity, trigger and smallest correction. Do not edit anything. Proposal page 2 says: \"Delivery is guaranteed in six weeks.\" The approved brief says: \"Expected delivery in six weeks after approved photographs arrive.\" Code at pricing.py:1-2 is: def cost_per_lead(spend, leads): return spend // leads. Callers pass nonnegative decimal spend and positive integer leads, and require the unrounded cost per lead. There is no Git diff. Keep the answer under 250 words."
+          }
+        ],
+        "limitations": "single sample per condition per case; tests instruction packet rather than automatic discovery; no native rendered artifact or executing code"
+      },
+      "trials": [
+        {
+          "id": "research-A",
+          "exit": 0,
+          "is_error": false,
+          "output": "**Recommendation: Do not increase spend yet. Hold at the current level and investigate.**\n\n**The management claim is wrong.** Leads grew 50%, but spend grew 200%. Efficiency fell sharply:\n\n- January: £100 / 10 leads = **£10 per lead**\n- February: £300 / 15 leads = **£20 per lead**\n\nCost per lead doubled (+100%), so efficiency roughly halved. Leads per £ fell from 0.10 to 0.05.\n\n**Marginal view:** the extra £200 bought only 5 additional leads, i.e. **£40 per incremental lead**, four times January's average cost.\n\n**Why not scale:** returns are diminishing sharply. Putting more money in at this rate would likely worsen cost per lead further.\n\n**Caveats:** these figures cover only two months and say nothing about lead quality, conversion to sales, or lead value. If a lead is worth well over £20-£40 in profit, the spend could still be justified, but that can't be determined from this data.\n\n**Next steps:**\n1. Find out why cost per lead doubled (channel mix, targeting, seasonality, tracking changes).\n2. Test a moderate budget between £100 and £300 to find where returns drop off.\n3. Correct the management summary, which currently misstates the result.",
+          "models": [
+            "claude-haiku-5-5",
+            "claude-sonnet-5-5"
+          ],
+          "seconds": 6.9,
+          "packet_sha256": null,
+          "condition": "control",
+          "word_count": 190
+        },
+        {
+          "id": "research-B",
+          "exit": 0,
+          "is_error": false,
+          "output": "**Recommendation: don't increase spend yet.** The summary's claim is wrong, and these figures actually point the other way.\n\n**What the figures show (stated, from your numbers):**\n\n| | Spend | Leads | Cost per lead |\n|---|---|---|---|\n| January | £100 | 10 | £10.00 |\n| February | £300 | 15 | £20.00 |\n\n- Leads rose 50%, but spend rose 200%.\n- Cost per lead doubled (+100%), so efficiency **worsened**, by half (10 leads per £100 fell to 5 per £100).\n- The marginal 5 leads cost £200 extra, which is £40 per additional lead, four times January's average.\n\n**Why not scale:** each extra pound is buying leads at sharply diminishing returns. Further spend would likely cost more per lead still.\n\n**Limits:** this is two data points. I can't tell whether the difference came from channel mix, seasonality, campaign changes or lead quality. There's also no data on lead value or conversion, so I can't say whether £20 per lead is profitable.\n\n**Next step:** hold spend at about the February level or revert toward January, then find what drove the drop. Only scale if the lead value supports £20 or more per lead. Correct the management summary before it circulates.",
+          "models": [
+            "claude-haiku-5-5",
+            "claude-sonnet-5-5"
+          ],
+          "seconds": 7.5,
+          "packet_sha256": "379accf3b6d62127557d804a92478b8d67e8f663636a19f8ab93749b3a253d83",
+          "condition": "jstack",
+          "word_count": 202
+        },
+        {
+          "id": "write-A",
+          "exit": 0,
+          "is_error": false,
+          "output": "Delivery is expected within six weeks, provided the client supplies approved photographs. The estimate is £4,000, excluding hosting. An optional maintenance package is available at £75 per month and can be cancelled with 30 days' notice.",
+          "models": [
+            "claude-haiku-5-5",
+            "claude-sonnet-5-5"
+          ],
+          "seconds": 3.6,
+          "packet_sha256": null,
+          "condition": "control",
+          "word_count": 36
+        },
+        {
+          "id": "write-B",
+          "exit": 0,
+          "is_error": false,
+          "output": "We expect to deliver in six weeks, provided you supply approved photographs.\n\nThe estimate is £4,000, excluding hosting.\n\nAn optional maintenance package is available at £75 per month and can be cancelled with 30 days' notice.",
+          "models": [
+            "claude-haiku-5-5",
+            "claude-sonnet-5-5"
+          ],
+          "seconds": 3.8,
+          "packet_sha256": "71c3002521783a6a7f33f91fd6fd75ed691dc0f2d57468236b3a54e73f65f990",
+          "condition": "jstack",
+          "word_count": 36
+        },
+        {
+          "id": "design-A",
+          "exit": 0,
+          "is_error": false,
+          "output": "**Critique (from description only; nothing rendered, so all findings are unverified).**\n\n1. **Text is too small for a room of 40.** 12pt body and an 8pt source note will likely be unreadable from the back. Aim for roughly 24pt or larger body and 12-14pt for the source. This is the biggest barrier.\n\n2. **The slide has no single point.** Three charts plus a 90-word paragraph compete for attention, so the audience must read and listen at once. Pick the one chart that carries the argument, state the takeaway as a headline, and move the other two to their own slides or an appendix.\n\n3. **Cut the paragraph.** Ninety words at presentation size can't be scanned. Reduce it to a headline sentence plus at most two or three short supporting lines. Put the rest in speaker notes or a handout.\n\n4. **Chart legibility.** At three-up, labels, axes and legends will shrink below readable size. Use direct labels instead of legends, and annotate the key data point.\n\n5. **Keep navy and cream, but verify contrast.** The pairing should be strong for body text. Check chart series colours and any tints against both backgrounds with a contrast tool before relying on them. Avoid light-on-cream accents.\n\n6. **Source note.** Keep it, but legible and placed consistently, or point to a handout.\n\n**Gap:** this needs a rendered check at projection size before sign-off.",
+          "models": [
+            "claude-haiku-5-5",
+            "claude-sonnet-5-5"
+          ],
+          "seconds": 7.7,
+          "packet_sha256": "52e0d4d08f24af53a03ac9cc1788ff205e73154f75a28157f3173b1c1f5e3588",
+          "condition": "jstack",
+          "word_count": 228
+        },
+        {
+          "id": "design-B",
+          "exit": 0,
+          "is_error": false,
+          "output": "**Caveat:** this critique rests on the description alone; I haven't seen layout, hierarchy, or contrast.\n\n**Highest-priority improvements**\n\n1. **Cut the 90-word paragraph.** In a room of 40, nobody reads it while listening. Replace it with a single takeaway headline (about 10-15 words) and move the detail to speaker notes or a handout.\n\n2. **Reduce to one chart per slide.** Three charts compete for attention and will be too small to read from the back. Show the chart that proves the headline, and split the others onto their own slides or into an appendix.\n\n3. **Raise type sizes.** 12pt body is too small for projection. Aim for roughly 24pt or more for body text and at least 14-16pt for chart labels. Cutting content is what makes this feasible.\n\n4. **Fix the 8pt source note.** It is effectively illegible when projected. Raise it to around 12pt, keep it unobtrusive in low-emphasis placement, or move full citations to the notes.\n\n5. **Use the navy and cream deliberately.** Keep the identity, but make cream the background with navy text, or the reverse, for strong contrast. Limit chart colors to navy, a mid-tone, and one accent to highlight the key data point.\n\n6. **Establish hierarchy.** Headline first, then one chart, then a short supporting line, with generous whitespace.\n\n**Verify once rendered:** contrast ratios, legibility from the back row, and chart label density.",
+          "models": [
+            "claude-haiku-5-5",
+            "claude-sonnet-5-5"
+          ],
+          "seconds": 7.6,
+          "packet_sha256": null,
+          "condition": "control",
+          "word_count": 227
+        },
+        {
+          "id": "review-A",
+          "exit": 0,
+          "is_error": false,
+          "output": "**Findings**\n\n1. **blocker (intent), Proposal p.2: \"Delivery is guaranteed in six weeks.\"**\n   - Trigger: the approved brief says \"Expected delivery in six weeks after approved photographs arrive.\"\n   - Impact: the proposal turns an estimate into an unconditional guarantee and drops the dependency on approved photographs. That creates a commitment the client never approved, and the start of the six weeks is undefined.\n   - Fix: restore the brief's wording, e.g. \"Expected delivery in six weeks after approved photographs arrive.\"\n\n2. **blocker (intent), pricing.py:1-2: `return spend // leads`**\n   - Trigger: `cost_per_lead(Decimal(\"10.50\"), 4)` returns `Decimal(\"2\")`, not `2.625`. Floor division discards the fractional part.\n   - Impact: callers require the unrounded cost per lead, so every result that is not an exact multiple is wrong, and it is wrong low. Because the function never errors, the mistake would go unnoticed.\n   - Fix: use true division, `return spend / leads`. With `Decimal` spend and `int` leads this keeps decimal precision and does not go through float. Under the stated caller contract, leads is positive, so no zero guard is needed.\n\n**Evidence level:** both findings are from reading the supplied text (cited). I did not run the function. The `Decimal` result above follows from Python's documented floor-division semantics. I also assumed that \"decimal\" means `decimal.Decimal`. If callers pass floats, `/` still returns the unrounded value.\n\nNo other actionable findings.",
+          "models": [
+            "claude-haiku-5-5",
+            "claude-sonnet-5-5"
+          ],
+          "seconds": 7.0,
+          "packet_sha256": "6882ebae7cf92b1906f5869843d92dba25e2e5daa2c15a1add9de4582891e790",
+          "condition": "jstack",
+          "word_count": 222
+        },
+        {
+          "id": "review-B",
+          "exit": 0,
+          "is_error": false,
+          "output": "**Findings**\n\n1. **Proposal, page 2: \"Delivery is guaranteed in six weeks.\"** Severity: High.\n   - Trigger: The approved brief makes delivery an expectation, not a guarantee, and starts the six weeks only after approved photographs arrive. If the client is late with photos, or the date slips for any reason, the proposal reads as a breached guarantee.\n   - Smallest correction: Replace with the brief's wording: \"Expected delivery in six weeks after approved photographs arrive.\"\n\n2. **pricing.py:1-2: `return spend // leads`** Severity: High.\n   - Trigger: `//` is floor division, so it truncates the result. For example, `spend=100.50, leads=4` returns `25.0` instead of `25.125`. Callers need the unrounded cost, so every non-exact division gives a wrong answer.\n   - Smallest correction: Change `//` to `/`, giving `return spend / leads`.\n\n3. **pricing.py:1-2: decimal type handling** Severity: Low, conditional.\n   - Trigger: If \"decimal\" means `decimal.Decimal`, then `/` with an int works fine. If it means `float`, results are subject to normal float error. Only a concern if exact decimal arithmetic is required.\n   - Smallest correction: None needed if `Decimal` is passed. Otherwise, have callers pass `Decimal` values.\n\nDivision by zero is not a finding, since callers guarantee positive `leads`.",
+          "models": [
+            "claude-haiku-5-5",
+            "claude-sonnet-5-5"
+          ],
+          "seconds": 6.6,
+          "packet_sha256": null,
+          "condition": "control",
+          "word_count": 194
+        }
+      ]
+    },
+    {
+      "round": 4,
+      "seed": 20261108,
+      "plan": {
+        "iteration": "hard-limit margin and selective design findings",
+        "source_commit": "2116d4e1c31e0dfd337c5d4ef895abfe539a26a1",
+        "client": "Claude Code 2.1.317",
+        "model": "client default; resolved model recorded from result modelUsage",
+        "constraints": "fresh process per answer; safe mode; no tools; no session persistence; no MCP; source-only tasks; no renderer",
+        "cases": [
+          {
+            "id": "research",
+            "skill": "research",
+            "prompt": "Should we increase advertising spend based on these supplied results? January: £100 spend, 10 leads. February: £300 spend, 15 leads. The management summary says: \"Lead volume grew 50%, so efficiency improved 50%.\" Recommend a decision using only these figures. Keep the answer under 220 words."
+          },
+          {
+            "id": "write",
+            "skill": "write",
+            "prompt": "Make this client proposal concise, preserving every commercial term: We expect delivery in six weeks, dependent on the client supplying approved photographs. Estimate £4,000, excluding hosting. The optional maintenance package costs £75 per month and can be cancelled with 30 days notice. Do not add claims or commitments. Return only the revised proposal."
+          },
+          {
+            "id": "design",
+            "skill": "design",
+            "prompt": "Critique a presentation slide using only this description: 12pt body text, an 8pt source note, three charts and a 90-word paragraph. Audience: a room of 40. The existing navy and cream identity must remain. No slide file, screenshot or renderer is available. Give the highest-priority improvements, without implementing changes. Keep the answer under 220 words."
+          },
+          {
+            "id": "review",
+            "skill": "review",
+            "prompt": "Review this existing document and supplied Python function. Return actionable findings only, with location, severity, trigger and smallest correction. Do not edit anything. Proposal page 2 says: \"Delivery is guaranteed in six weeks.\" The approved brief says: \"Expected delivery in six weeks after approved photographs arrive.\" Code at pricing.py:1-2 is: def cost_per_lead(spend, leads): return spend // leads. Callers pass nonnegative decimal spend and positive integer leads, and require the unrounded cost per lead. There is no Git diff. Keep the answer under 250 words."
+          }
+        ],
+        "limitations": "single sample per condition per case; tests instruction packet rather than automatic discovery; no native rendered artifact or executing code"
+      },
+      "trials": [
+        {
+          "id": "research-A",
+          "exit": 0,
+          "is_error": false,
+          "output": "**Recommendation: No, do not increase spend on this evidence.**\n\n**The management summary is wrong.** Lead volume did grow 50% (10 → 15), but spend rose 200% (£100 → £300). Efficiency fell sharply, not improved.\n\n| Metric | January | February | Change |\n|---|---|---|---|\n| Spend | £100 | £300 | +200% |\n| Leads | 10 | 15 | +50% |\n| Cost per lead | £10 | £20 | +100% |\n\nCost per lead doubled. Leads per £ fell from 0.10 to 0.05, a 50% drop in efficiency.\n\n**Marginal view:** The extra £200 in February bought only 5 additional leads, i.e. £40 per incremental lead, four times January's £10 average. That suggests steep diminishing returns at the higher spend level.\n\n**Limits of the data:** Two data points can't tell us about lead quality, conversion to sales, seasonality, or whether other changes (creative, targeting, channel) happened. Lead value is also unknown, so we can't say whether £20 or £40 per lead is profitable.\n\n**Decision:** Hold spend, or revert toward January's level, until you can show that incremental leads at £40 each are worth more than that in revenue. If you test again, increase spend in smaller steps and track cost per lead and conversion rate alongside volume.",
+          "models": [
+            "claude-haiku-5-5",
+            "claude-sonnet-5-5"
+          ],
+          "seconds": 6.1,
+          "packet_sha256": null,
+          "condition": "control",
+          "word_count": 208
+        },
+        {
+          "id": "research-B",
+          "exit": 0,
+          "is_error": false,
+          "output": "**Recommendation: do not increase spend on this evidence.** Hold at the current level, or run a controlled test, until cost per lead is understood.\n\n**The summary is wrong.** Leads rose 50% (10 to 15), but spend rose 200% (£100 to £300). Efficiency is leads per pound, or its inverse, cost per lead:\n\n| Month | Spend | Leads | Cost per lead |\n|---|---|---|---|\n| January | £100 | 10 | £10.00 |\n| February | £300 | 15 | £20.00 |\n\nCost per lead doubled (+100%), so efficiency fell by half. Leads per pound dropped from 0.10 to 0.05.\n\n**Marginal view:** the extra £200 bought 5 extra leads, about £40 each. That is four times January's cost per lead, which suggests sharply diminishing returns.\n\n**Limits:** two data points can't separate spend effects from seasonality, campaign changes or lead quality. The figures say nothing about lead value, conversion to customers or revenue, so I can't say whether £20 or £40 per lead is profitable.\n\n**Before deciding:** find the maximum cost per lead the business can afford (from conversion rate and customer value), and correct the management summary. If £40 marginal cost is above that ceiling, spending more is unjustified. If it's below, a staged increase with a clear comparison period is the safer test.",
+          "models": [
+            "claude-haiku-5-5",
+            "claude-sonnet-5-5"
+          ],
+          "seconds": 6.5,
+          "packet_sha256": "87ed31bac0850159301b62da1d4af88c991618bfa4564346d76104048d941135",
+          "condition": "jstack",
+          "word_count": 214
+        },
+        {
+          "id": "write-A",
+          "exit": 0,
+          "is_error": false,
+          "output": "Delivery is expected within six weeks, provided the client supplies approved photographs. The estimate is £4,000, excluding hosting. An optional maintenance package is available at £75 per month, cancellable with 30 days' notice.",
+          "models": [
+            "claude-haiku-5-5",
+            "claude-sonnet-5-5"
+          ],
+          "seconds": 3.7,
+          "packet_sha256": null,
+          "condition": "control",
+          "word_count": 33
+        },
+        {
+          "id": "write-B",
+          "exit": 0,
+          "is_error": false,
+          "output": "Delivery is expected in six weeks, provided the client supplies approved photographs.\n\nThe estimate is £4,000, excluding hosting.\n\nAn optional maintenance package is available at £75 per month, cancellable with 30 days' notice.",
+          "models": [
+            "claude-haiku-5-5",
+            "claude-sonnet-5-5"
+          ],
+          "seconds": 4.1,
+          "packet_sha256": "f1b3d6d157e7f0ef2281f00b2ab40bd602bf3ade18894ccca50880f913cd83fc",
+          "condition": "jstack",
+          "word_count": 33
+        },
+        {
+          "id": "design-A",
+          "exit": 0,
+          "is_error": false,
+          "output": "**Critique from description only (unverified; no render available).** Navy and cream stay.\n\n1. **Body text is unreadable at room scale.** 12pt and an 8pt source note can't be read by a room of 40, especially from the back. Raise body to roughly 24pt or more and the source note to at least 14pt, or move the source to speaker notes or a handout.\n\n2. **The 90-word paragraph competes with the charts.** The audience will read it instead of listening. Cut it to a single claim sentence (under ~20 words) as the slide's headline, and move the rest to notes.\n\n3. **Three charts on one slide split attention.** At legible sizes they won't fit. Choose the chart that proves the point and give it the space. Move the others to following slides, or make them one comparison if the argument needs all three.\n\n4. **Hierarchy is likely flat.** With a paragraph, charts and notes all small, nothing leads. Make the headline the takeaway, the chart second, and the source last.\n\n5. **Colour needs checking.** Use navy text on cream (or cream on navy) for the highest contrast, and don't rely on colour alone to separate chart series. Measure contrast with a tool before claiming a ratio.\n\nOnce a render exists, check legend wrapping, label size and the back-of-room view.",
+          "models": [
+            "claude-haiku-5-5",
+            "claude-sonnet-5-5"
+          ],
+          "seconds": 6.7,
+          "packet_sha256": "ee935b49e3319e65aa79f273f24cc6cb8be3f0e1437f007e670aa0f6847e5886",
+          "condition": "jstack",
+          "word_count": 218
+        },
+        {
+          "id": "design-B",
+          "exit": 0,
+          "is_error": false,
+          "output": "**Caveat:** this critique is based only on your description, not the rendered slide, so I can't judge layout, contrast, or chart quality.\n\n**Highest-priority improvements**\n\n1. **Cut the 90-word paragraph.** A room of 40 will read it instead of listening. Reduce it to one headline sentence (about 15 words) that states the takeaway, and move the detail to speaker notes or a handout.\n\n2. **Split the slide.** Three charts plus text is too much for one view. Give each chart its own slide, or keep one chart and move the others to an appendix. Each chart's title should state its conclusion, not just its topic.\n\n3. **Raise the type sizes.** 12pt is too small for a room of 40, since rear seats will struggle. Aim for 24pt or larger for body text and 18pt or larger for chart labels. If the text doesn't fit at those sizes, that is a sign there is too much content.\n\n4. **Fix the 8pt source note.** It's unreadable when projected. Raise it to at least 12pt, keep it low-key through color and placement, and shorten it to the essential citation.\n\n5. **Work within navy and cream.** Use navy for text and key data, cream as the background, and one accent tint for emphasis. Check that text and chart colors keep strong contrast under a projector, where cream can wash out.\n\n**Check once rendered:** hierarchy, alignment, whitespace, and chart legibility from the back row.",
+          "models": [
+            "claude-haiku-5-5",
+            "claude-sonnet-5-5"
+          ],
+          "seconds": 6.9,
+          "packet_sha256": null,
+          "condition": "control",
+          "word_count": 238
+        },
+        {
+          "id": "review-A",
+          "exit": 0,
+          "is_error": false,
+          "output": "**Findings**\n\n1. **Proposal p.2, \"Delivery is guaranteed in six weeks.\"**\n   - **Severity:** High (contractual/commercial risk)\n   - **Trigger:** Approved photographs arrive late, or any delay outside your control. The client can read this as an unconditional guarantee, which contradicts the approved brief.\n   - **Smallest correction:** Replace with the brief's wording: \"Expected delivery in six weeks after approved photographs arrive.\"\n\n2. **pricing.py:2, `return spend // leads`**\n   - **Severity:** High (wrong results)\n   - **Trigger:** Any call where spend isn't an exact multiple of leads. For example, `cost_per_lead(10.50, 4)` returns `2.0` instead of `2.625`. Floor division discards the fractional part, which breaks the requirement for the unrounded cost per lead.\n   - **Smallest correction:** Use true division: `return spend / leads`.\n\n3. **pricing.py:1-2, decimal spend type**\n   - **Severity:** Low (conditional)\n   - **Trigger:** If \"decimal\" means `decimal.Decimal`, `Decimal / int` works and stays exact. If it means `float`, results carry normal float representation error. Neither is a defect with `/`, but mixing `Decimal` with `float` raises `TypeError`.\n   - **Smallest correction:** None needed if callers consistently pass one type. Otherwise, confirm the type with callers.\n\nNo other issues found. Leads are guaranteed positive, so division by zero isn't reachable under the stated contract.",
+          "models": [
+            "claude-haiku-5-5",
+            "claude-sonnet-5-5"
+          ],
+          "seconds": 7.8,
+          "packet_sha256": null,
+          "condition": "control",
+          "word_count": 196
+        },
+        {
+          "id": "review-B",
+          "exit": 0,
+          "is_error": false,
+          "output": "**Findings**\n\n1. **blocker (intent)**: Proposal p. 2, \"Delivery is guaranteed in six weeks.\"\n   - **Trigger:** The approved brief says \"Expected delivery in six weeks after approved photographs arrive.\" The proposal turns an expectation into a guarantee and drops the dependency on approved photographs.\n   - **Impact:** It creates a commitment the client never approved. Late photographs would put the studio in breach.\n   - **Smallest fix:** Use the brief's wording: \"Expected delivery in six weeks after approved photographs arrive.\"\n\n2. **blocker (intent)**: pricing.py:2, `return spend // leads`\n   - **Trigger:** `//` is floor division. With decimal spend, e.g. `Decimal(\"10.00\") // 3`, it returns `3`, not `3.3333…`. Any spend below `leads` returns `0`.\n   - **Impact:** Callers require the unrounded cost per lead, so every non-exact result is truncated and wrong. Cost per lead is understated, and can show as zero.\n   - **Smallest fix:** `return spend / leads`. With `Decimal` spend and an int `leads`, `/` gives the true quotient. Decimal division uses the context precision (28 digits by default), so it is not mathematically exact for repeating results. If callers need more than that, they must set the context precision.\n\n**Evidence:** I read only the text you supplied and did not run the function. The `//` behavior is documented Python semantics (rung 2: cited, not run). I did not review any other proposal pages, so the guarantee wording on page 2 may also appear elsewhere.",
+          "models": [
+            "claude-haiku-5-5",
+            "claude-sonnet-5-5"
+          ],
+          "seconds": 7.6,
+          "packet_sha256": "7a4c0e10aca32c4234a972ee602cddad3ba1036df1be94d345867a63ac0d1778",
+          "condition": "jstack",
+          "word_count": 231
+        }
+      ],
+      "blind_judgment": [
+        {
+          "case": "research",
+          "A": {
+            "completion": true,
+            "support": true,
+            "intent": true,
+            "restraint": true,
+            "reason": "Gives a clear no, corrects the summary, and shows cost per lead rising from £10 to £20 and marginal cost at £40. Word count is 208, under the 220 limit. It flags unknown lead value and quality: \"Two data points can't tell us about lead quality, conversion to sales, seasonality\"."
+          },
+          "B": {
+            "completion": true,
+            "support": true,
+            "intent": true,
+            "restraint": true,
+            "reason": "Same correct calculations and a clear recommendation. Word count is 214, under the limit. It keeps the limits on the data: \"The figures say nothing about lead value, conversion to customers or revenue\"."
+          },
+          "winner": "tie",
+          "reason": "Both are correct, within the word limit, and appropriately qualified, with no material difference."
+        },
+        {
+          "case": "write",
+          "A": {
+            "completion": true,
+            "support": true,
+            "intent": true,
+            "restraint": true,
+            "reason": "Keeps the six weeks, the photograph dependency, £4,000 excluding hosting, £75 per month and 30 days' notice. It adds no claims."
+          },
+          "B": {
+            "completion": true,
+            "support": true,
+            "intent": true,
+            "restraint": true,
+            "reason": "Keeps every term and adds nothing. Both answers are 33 words; B only splits them into three paragraphs."
+          },
+          "winner": "tie",
+          "reason": "The two preserve every commercial term at the same length. They differ only in formatting."
+        },
+        {
+          "case": "design",
+          "A": {
+            "completion": true,
+            "support": true,
+            "intent": true,
+            "restraint": true,
+            "reason": "Word count is 218, under 220. It opens with \"unverified; no render available\" and keeps navy and cream. Its priorities are sound and it does not implement changes. \"Hierarchy is likely flat\" is hedged and counts as judgment."
+          },
+          "B": {
+            "completion": false,
+            "support": true,
+            "intent": true,
+            "restraint": true,
+            "reason": "Word count is 238, over the 220 limit, so it fails the explicit length constraint. The content is otherwise sound and carries a caveat: \"based only on your description\"."
+          },
+          "winner": "A",
+          "reason": "A meets the 220-word limit and B exceeds it at 238, while their substance is comparable."
+        },
+        {
+          "case": "review",
+          "A": {
+            "completion": false,
+            "support": false,
+            "intent": true,
+            "restraint": true,
+            "reason": "The task asked for actionable findings only, but finding 3 is a conditional low-severity item whose correction is \"None needed if callers consistently pass one type\". It also claims \"`Decimal / int` works and stays exact\", which is wrong for repeating quotients. Findings 1 and 2 are correct."
+          },
+          "B": {
+            "completion": true,
+            "support": true,
+            "intent": true,
+            "restraint": true,
+            "reason": "Both findings have location, severity, trigger and smallest fix, and the word count is 231, under 250. It correctly notes that Decimal division is limited by context precision: \"not mathematically exact for repeating results\". It states that it did not run the code. The \"rung 2\" jargon is a minor style issue."
+          },
+          "winner": "B",
+          "reason": "B returns only actionable findings and is accurate about Decimal division. A pads its list with a non-actionable item and overstates Decimal exactness."
+        }
+      ]
+    },
+    {
+      "round": 5,
+      "seed": 20261109,
+      "plan": {
+        "iteration": "fresh prompts after development changes frozen",
+        "source_commit": "2116d4e1c31e0dfd337c5d4ef895abfe539a26a1",
+        "client": "Claude Code 2.1.317",
+        "model": "client default; resolved model recorded from result modelUsage",
+        "constraints": "fresh process per answer; safe mode; no tools; no session persistence; no MCP; source-only tasks; no renderer",
+        "cases": [
+          {
+            "id": "heldout-review",
+            "skill": "review",
+            "prompt": "Review the following supplied excerpts. Return actionable findings only, under 160 words, without editing. Contract page 4 says \"Retainer includes unlimited revisions\". The approved brief says \"Retainer includes two revision rounds\". totals.py:1-2 contains def aggregate_cost_per_lead(rows): return sum(spend / leads for spend, leads in rows) / len(rows). Rows is always nonempty; spend is nonnegative and lead counts are positive integers. The required result is total spend divided by total leads, not an unweighted average of per-row rates. Find concrete defects and the smallest corrections; do not speculate about inputs excluded by this contract."
+          },
+          {
+            "id": "heldout-design",
+            "skill": "design",
+            "prompt": "Critique this description of a one-page A4 executive brief for busy board members: a 70-word opening paragraph in 9pt type, two dense financial tables with 8pt footnotes, and three equally bold headings. Preserve the existing navy-and-cream identity and all sourced financial figures. No file, screenshot or renderer is available. Return only prioritized recommendations under 160 words. Do not implement anything or claim to have inspected the layout."
+          }
+        ],
+        "limitations": "single sample per condition per case; tests instruction packet rather than automatic discovery; no native rendered artifact or executing code"
+      },
+      "trials": [
+        {
+          "id": "heldout-review-A",
+          "exit": 0,
+          "is_error": false,
+          "output": "**Findings**\n\n1. **blocker, intent: contract contradicts approved brief.** Contract p.4 says \"unlimited revisions\"; the approved brief says \"two revision rounds.\" This is an uncapped commitment against an agreed limit, so the contract as written would bind the studio to more than was approved. Smallest fix: change p.4 to \"Retainer includes two revision rounds\" (or, if unlimited is truly intended, get the brief amended and re-approved). Evidence: only the two quoted excerpts, so which one is authoritative is not established.\n\n2. **blocker, intent: `totals.py:1-2` computes the wrong metric.** It returns the unweighted mean of per-row spend/leads rates. Example: rows (100, 1) and (100, 100) give (100 + 1)/2 = 50.5, but the required value is 200/101 ≈ 1.98. Rows with few leads are overweighted. Smallest fix:\n\n```python\ndef aggregate_cost_per_lead(rows):\n    return sum(s for s, _ in rows) / sum(l for _, l in rows)\n```\n\nLead counts are positive and rows nonempty, so the denominator is nonzero. I worked the example by hand and did not run the code.",
+          "models": [
+            "claude-haiku-5-5",
+            "claude-sonnet-5-5"
+          ],
+          "seconds": 6.2,
+          "packet_sha256": "7a4c0e10aca32c4234a972ee602cddad3ba1036df1be94d345867a63ac0d1778",
+          "condition": "jstack",
+          "word_count": 167
+        },
+        {
+          "id": "heldout-review-B",
+          "exit": 0,
+          "is_error": false,
+          "output": "**Finding 1: Contract/brief conflict (scope of revisions)**\n- Contract p.4 says \"unlimited revisions\"; the approved brief says \"two revision rounds.\" These are mutually exclusive, and unlimited is an open-ended cost exposure.\n- Fix: Amend contract p.4 to \"Retainer includes two revision rounds\" (matching the approved brief), or get written sign-off on the change if unlimited was intended. Confirm which document governs before signing.\n\n**Finding 2: `totals.py:1-2` computes the wrong metric**\n- It returns the unweighted mean of per-row rates (`sum(spend/leads)/len(rows)`). The requirement is total spend ÷ total leads. Rows with different lead counts get equal weight, so the result is wrong whenever leads differ across rows.\n- Smallest fix:\n```python\ndef aggregate_cost_per_lead(rows):\n    return sum(s for s, _ in rows) / sum(l for _, l in rows)\n```\n- The denominator is always positive under the stated contract, so no zero guard is needed.",
+          "models": [
+            "claude-haiku-5-5",
+            "claude-sonnet-5-5"
+          ],
+          "seconds": 5.5,
+          "packet_sha256": null,
+          "condition": "control",
+          "word_count": 143
+        },
+        {
+          "id": "heldout-design-A",
+          "exit": 0,
+          "is_error": false,
+          "output": "Based on the description only; the layout is unverified.\n\n1. **Lead with the decision.** Replace the 70-word, 9pt paragraph with a 2-3 line takeaway (what changed, what the board must decide) at 11pt or larger. Move supporting detail below it.\n2. **Create heading hierarchy.** Three equally bold headings give no entry point. Make the decision heading dominant and demote the others in size or weight.\n3. **Make the tables scannable.** Keep every sourced figure. Right-align numbers, use tabular figures, add light row rules, and emphasize the one or two rows the board needs in navy.\n4. **Raise footnote size.** 8pt is hard to read in print. Use 9pt if space allows, shorten the wording (not the figures), and keep the source attributions.\n5. **Cut prose, not type size.** If the page overflows, trim words or spacing before shrinking text further.\n6. **Verify contrast.** Test navy-on-cream and any tinted table fills with a contrast tool before claiming a ratio.",
+          "models": [
+            "claude-haiku-5-5",
+            "claude-sonnet-5-5"
+          ],
+          "seconds": 9.0,
+          "packet_sha256": "ee935b49e3319e65aa79f273f24cc6cb8be3f0e1437f007e670aa0f6847e5886",
+          "condition": "jstack",
+          "word_count": 158
+        },
+        {
+          "id": "heldout-design-B",
+          "exit": 0,
+          "is_error": false,
+          "output": "**Prioritized recommendations (from the description only, not an inspected layout)**\n\n1. **Raise body size to 10.5–11pt.** 9pt is too small for board readers. Cut the opening to ~50 words, leading with the decision or headline conclusion.\n\n2. **Establish heading hierarchy.** Equal boldness gives no scanning path. Make one primary heading (navy, larger), keep the others quieter (smaller, or regular weight with a cream-toned rule).\n\n3. **Simplify the tables.** Highlight only the key rows (totals, variances) and lighten gridlines. Right-align numerals, use consistent units and decimals, and add subtle cream banding. Keep every sourced figure unchanged.\n\n4. **Lift footnotes to 8.5–9pt.** Keep them short and grouped under each table, with sources retained verbatim.\n\n5. **Add whitespace.** Increase margins and paragraph spacing; if the page still feels crowded, move secondary detail to an appendix rather than shrinking type.\n\n6. **Check contrast.** Use navy text on cream, and avoid pale tints for small text.",
+          "models": [
+            "claude-haiku-5-5",
+            "claude-sonnet-5-5"
+          ],
+          "seconds": 5.9,
+          "packet_sha256": null,
+          "condition": "control",
+          "word_count": 151
+        }
+      ],
+      "blind_judgment": [
+        {
+          "case": "heldout-review",
+          "A": {
+            "completion": false,
+            "support": true,
+            "intent": true,
+            "restraint": true,
+            "reason": "The word count is 167, over the 160-word limit, so the task constraint fails. The findings are otherwise correct. The worked example is accurate: \"(100 + 1)/2 = 50.5, but the required value is 200/101 ≈ 1.98\". It also says it did not run the code."
+          },
+          "B": {
+            "completion": true,
+            "support": true,
+            "intent": true,
+            "restraint": true,
+            "reason": "The word count is 143, within the limit. It identifies both defects and gives the minimal fix, `sum(s for s, _ in rows) / sum(l for _, l in rows)`. It respects the contract with \"no zero guard is needed\"."
+          },
+          "winner": "B",
+          "reason": "Both give correct findings and fixes, but A exceeds the 160-word cap (167) and B does not."
+        },
+        {
+          "case": "heldout-design",
+          "A": {
+            "completion": true,
+            "support": true,
+            "intent": true,
+            "restraint": true,
+            "reason": "The word count is 158, within the limit. It opens with \"Based on the description only; the layout is unverified.\" It keeps sourced figures and source attributions, keeps the navy identity, and does not implement anything."
+          },
+          "B": {
+            "completion": true,
+            "support": true,
+            "intent": true,
+            "restraint": true,
+            "reason": "The word count is 151, within the limit. It opens with \"from the description only, not an inspected layout\". It keeps figures unchanged (\"Keep every sourced figure unchanged\") and uses the navy and cream identity. The appendix suggestion is a judgment call, not a fabricated observation."
+          },
+          "winner": "tie",
+          "reason": "Both meet the length limit, give prioritized and reasonable recommendations, disclaim inspection, and preserve the figures and identity. No material difference."
+        }
+      ]
+    }
+  ],
+  "source_revision_diff": "diff --git a/shared/rules.md b/shared/rules.md\nindex a98be89..5b3baed 100644\n--- a/shared/rules.md\n+++ b/shared/rules.md\n@@ -58,7 +58,10 @@ Do not put private source material in public artifacts or repositories.\n \n ## Outcome\n \n-Give each step one result: passed, failed, not run or unavailable. Lead with the\n-outcome, then the evidence, then the gaps. Never invent counts, links, scores or\n-model names. Write `<REDACTED>` in place of every secret in output, reports,\n+Keep the requested format. Leave a margin under hard word limits. Fit evidence\n+and necessary caveats inside that format, without routine reporting appendices.\n+\n+When reporting checks, use passed, failed, not run or unavailable. Lead with the\n+outcome, then the evidence and material gaps; do not recap routine workflow steps.\n+Never invent counts, links, scores or model names. Write `<REDACTED>` in place of every secret in output, reports,\n commits, PR text and comments.\ndiff --git a/skills/design/SKILL.md b/skills/design/SKILL.md\nindex 1b21bf1..25607af 100644\n--- a/skills/design/SKILL.md\n+++ b/skills/design/SKILL.md\n@@ -24,8 +24,10 @@ Read `.agents/jstack/rules.md` first and apply it.\n    the rendered result before extending the direction across the artifact.\n 5. **Assess and refine.** Compare against the brief using the reference criteria.\n    Rank problems by reader/task impact with an exact location, evidence and\n-   proposed correction. Correct the highest-impact issue in scope and inspect\n-   again. A source-only critique must label visual judgments as unverified.\n+   proposed correction. For critique, select the smallest set of findings that\n+   changes the next design decision; combine related observations. In\n+   implementation mode, correct the highest-impact issue and inspect again.\n+   Label source-only visual judgments unverified once, not in each finding.\n 6. **Deliver** the direction or changed artifact, rationale, checks and remaining\n    tradeoffs. Record reusable decisions in the project's existing design docs\n    when requested or needed for the implementation; do not create a competing\ndiff --git a/skills/review/SKILL.md b/skills/review/SKILL.md\nindex 7558efa..482217d 100644\n--- a/skills/review/SKILL.md\n+++ b/skills/review/SKILL.md\n@@ -18,22 +18,18 @@ Read `.agents/jstack/rules.md` first and apply it.\n    For prose, trace material claims to sources, check logic and commitments.\n    For design, compare with the brief and inspect the rendered artifact when\n    available; distinguish observed defects from aesthetic preferences.\n-3. **Find the safety fact.** Most risky-looking changes are safe because of one\n-   fact. Name it and push it up the proof ladder. A short script or an isolated\n-   reproduction beats a paragraph. Do not change the user's checkout or post\n-   comments unless asked.\n-4. **Grade each finding.**\n+3. **Grade each finding.**\n    - `blocker`: the intended case is wrong, or data, security, routes or\n      deployment break, or the central claim/decision is unsupported.\n    - `should`: a defect that affects users or readers inside the intent.\n-   - `nit`: rare paths, small costs, style. Keep these few.\n+   Omit speculative concerns and items with no concrete impact or correction.\n    Also flag scope creep: code, guards or tests that the intent does not need.\n    Tag each finding `intent` (wrong or missing behavior) or `standards` (breaks\n    a documented convention), so one kind does not hide the other.\n-5. **Report findings first**, by severity. Each gives a `file:line`, page/slide\n-   or source passage, trigger, impact, proof rung and smallest fix (delete or\n-   narrow). Then give the scope reviewed, the safety fact and its rung, checks\n-   run and blind spots. With no findings, say \"no actionable findings\", not\n-   \"no bugs\".\n+4. **Report findings first**, by severity. Give each location, trigger, impact,\n+   supporting evidence and smallest fix in one concise paragraph unless the\n+   user requests another format. Omit routine scope and check summaries when\n+   findings alone are requested. Qualify evidence where it affects the finding.\n+   With no findings, say \"no actionable findings\", not \"no bugs\".\n \n A review is not implementation and not merge approval.\n",
+  "reviewer_settings": "Fresh Claude Code --safe-mode -p --tools empty --strict-mcp-config --mcp-config empty --output-format json --no-session-persistence; same defaults as generators, no packet or mapping supplied. First judge estimated lengths; final and holdout judges received measured lengths.",
+  "no_further_tuning_after_holdout": true
+}

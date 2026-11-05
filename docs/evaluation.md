@@ -4,6 +4,8 @@ These are repeatable manual cases, evaluated on 5 November 2026 against the
 candidate instructions. They are a same-author walkthrough, not blind model
 trials. Installation tests validate packaging, not these judgments. Repeat these
 cases with a fresh agent/model before claiming measured output superiority.
+Subsequent real paired trials and native smoke checks are recorded in the
+[v0.4.0 validation report](release-0.4.0.md).
 
 For each run, retain the prompt, sources, resulting artifact, skill version,
 model and actual tool/renderer availability. Fail a case for an unsupported claim,
@@ -101,8 +103,9 @@ model dependency or evaluation framework is required.
 
 Record: case, skill commit, model/settings, available tools, output/transcript
 paths, blinded judgment, failure evidence and final revealed treatment. Results
-belong in a private evaluation destination when inputs are private. No paired
-blind trials have been executed in this change; existing cases remain walkthroughs.
+belong in a private evaluation destination when inputs are private. These initial
+cases remain walkthroughs; subsequent paired trials, failures and scope limits
+are recorded in the v0.4.0 validation report.
 
 ## Regression gate
 

@@ -4,7 +4,9 @@ Inspected 5 November 2026. This is a source-backed editorial assessment of the
 offering, not a benchmark of competing models or generated artifacts. Upstream
 runtimes and test suites were not executed. Stars and README test counts do not
 contribute to scores. The rubric is a retrospective design audit; it was not
-preregistered before implementation. No independent evaluator participated.
+preregistered before implementation. No independent evaluator participated in
+this original source assessment.
+Later context-blinded model trials are recorded in [v0.4.0 validation](release-0.4.0.md).
 
 ## Sources and scope
 
@@ -114,9 +116,9 @@ or below 60 lines; existing publication policies remain; required tests and fron
 validation pass. See [evaluation cases](evaluation.md) for actual walkthroughs.
 
 This completes the local capability improvement, not empirical parity with the
-best specialists. The next useful hillclimb is fresh-agent trials on real briefs,
-blind rating of rendered outputs and client discovery runs. Preserve those raw
-outputs and evaluate factual accuracy, task completion and visual usability with
+best specialists. The [release validation](release-0.4.0.md) now records real
+model trials and client discovery runs. Blind rating of rendered outputs and
+broader real briefs remain useful next steps. Preserve those raw outputs and evaluate factual accuracy, task completion and visual usability with
 the same inputs before raising scores. Native document/browser behavior and
 upstream runtime quality remain unverified here.
 
@@ -129,5 +131,5 @@ invocation policies before target writes. Doctor separates optional audit/edit
 instruction availability from core integrity; runtime readiness stays unverified.
 Malformed-manifest and late-update rollback tests protect the update boundary.
 Generic writing instructions were trimmed; the command count remains fourteen.
-The evaluation document now includes a blind paired procedure, with no claim that
-such trials have run. These changes do not increase the subjective score.
+The evaluation document now includes a blind paired procedure, with subsequent
+trials and limitations recorded in the release validation report. These changes do not increase the subjective score.
