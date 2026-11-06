@@ -60,6 +60,10 @@ request, except `/push` and `/update-skills`: those fire only when typed
 (`disable-model-invocation` for Claude Code and Cursor, `agents/openai.yaml`
 policy for Codex). Publishing still requires the user's explicit intent.
 
+Multi-part reviews and verification map requested outcomes to evidence. Shared
+rules require evidence before speculative patches and revalidation of saved
+handoffs. Long tasks reuse existing project notes rather than a new task tracker.
+
 Every skill first reads one shared file, `.agents/jstack/rules.md`. It holds the
 context, scope, proof and outcome rules once, so each SKILL.md stays short. Its
 proof ladder (stated, cited, ran, observed) is how every skill reports evidence.
@@ -157,13 +161,13 @@ Clone jstack **beside your projects**, then name the target repository explicitl
 ```sh
 git clone https://github.com/joeconstanti/jstack.git
 cd jstack
-git checkout v0.4.0
+git checkout v0.5.0
 python3 install.py install --project /absolute/path/to/your-project --dry-run
 python3 install.py install --project /absolute/path/to/your-project
 python3 install.py check --project /absolute/path/to/your-project
 ```
 
-These commands install the reviewed `v0.4.0` source. Omit the checkout to use
+These commands install the reviewed `v0.5.0` source. Omit the checkout to use
 the default branch instead.
 
 Reload your coding agent to discover the files. In the target project, invoke
@@ -203,9 +207,10 @@ when FTP or another pipeline uploads the repository root.
 | **Other coding agents** | Read the canonical SKILL.md directly, or use their supported project-local skill discovery |
 
 The workflows use ordinary Markdown and adapt to the tools an agent has. This is
-portable instruction support. The [v0.4.0 validation report](docs/release-0.4.0.md)
-records real CLI smoke checks for Codex, Claude and Cursor, Gemini discovery,
-Cursor output-format limitations and the remaining Gemini/OpenCode runtime gaps.
+portable instruction support. The [v0.5.0 validation report](docs/release-0.5.0.md)
+records installed writing-workflow checks for Codex, Claude, Cursor and OpenCode,
+plus Gemini's account eligibility blocker. Earlier trials remain in the
+[v0.4.0 report](docs/release-0.4.0.md).
 These narrow checks do not certify every command or IDE menu/reload behavior.
 Doctor reports installation integrity through `ok` and `problems`; its
 `workflows` field separately reports whether audit/edit instructions are available.
@@ -252,6 +257,14 @@ installer. Upstream: [Impeccable](https://github.com/pbakaus/impeccable), Apache
 Its launcher can download a platform engine on first use. Live Mode needs a local
 source app and an actively serviced event loop. Stop and clean up instrumentation
 before committing or deploying. jstack never injects Live Mode into production.
+
+## Workflow evaluation
+
+The optional standard-library [probe runner](scripts/probe.py) exercises real
+installed skills in disposable Git repositories. It records file/Git invariants,
+tool reads and final answers separately from manual semantic judgments. It is
+not run by the installer or ordinary CI. See [running evaluations](docs/probes.md)
+for commands, permissions, cases and known limitations.
 
 ## Customization
 

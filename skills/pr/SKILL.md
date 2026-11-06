@@ -2,7 +2,6 @@
 name: pr
 description: "Open a pull request: topic branch, scoped commit, push and a problem-first description. Use for /pr, \"open a PR\" or \"file a PR\"; babysits it when asked and never merges."
 ---
-
 # pr
 
 Read `.agents/jstack/rules.md` first and apply it.

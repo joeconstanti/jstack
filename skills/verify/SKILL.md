@@ -7,6 +7,15 @@ description: "Verify web behavior or final documents and presentations against a
 
 Read `.agents/jstack/rules.md` first and apply it. The goal is rung 4 (observed), or a clear reason why it was not reached.
 
+Extract criteria from the request/brief, not incidental source details.
+For multi-part work, map those requested outcomes to scenario, evidence and
+passed/failed/not run/unavailable result. Reuse existing acceptance criteria.
+Without a render, mark visual criteria unavailable, including inferred readability
+or clipping risks; never mark them failed from a description alone. Keep this
+mapping inside the requested format and word limit; omit routine recap.
+Under a tight word limit, use short bullets instead of a table; omit preamble
+and next steps unless requested. Describe source-only risks once.
+
 For documents and presentations, identify the final file/version and acceptance
 criteria. Use an available format-specific tool to render or export it; inspect
 pages/slides for clipped text, table layout, image crops, readable labels and

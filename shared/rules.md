@@ -11,6 +11,12 @@ Every jstack skill reads this file first. Skills hold only their own steps.
   Discover a missing hint from manifests, lockfiles, scripts and CI. For design
   and knowledge work, read the brief, audience, source material and existing
   terminology instead; a build pipeline is not a prerequisite.
+- On resuming interrupted work, read an existing task handoff if present, then
+  recheck the checkout, HEAD, dirty paths and external jobs before acting. Saved
+  state is a lead, not current proof. For long tasks, use the project's existing
+  notes; when a handoff is requested or required, record checkout/HEAD, owned dirty
+  paths, goal, decisions, evidence locations, unfinished work and next action. Do not
+  create a second task tracker or overwrite another task's notes.
 - T3, Claude or `gh` tool names in a step are examples. Use what this harness has.
 - When a step names another jstack skill, invoke that skill with the harness's
   skill tool (or read its SKILL.md) instead of improvising its job. `push` and
@@ -46,7 +52,10 @@ and say where it stopped:
 4. **Observed.** The behavior was seen in the running app or on the live site.
 
 A green build proves rung 3 for code, not rung 4 for UI. HTTP 200 is not a
-rendered page. A push is not a deployment. When a check gives a strange result,
+rendered page. A push is not a deployment. Before a speculative bug fix, reproduce
+the failure or gather diagnostic evidence, name one hypothesis and test the
+smallest change that distinguishes it. Trace the failing boundary; do not stack
+unproven fixes. When a check gives a strange result,
 suspect the observation (wrong URL, stale cache, other checkout) before the
 code. After two failed fixes that share one premise, write the premise down and
 test it before a third fix.

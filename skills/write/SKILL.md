@@ -7,6 +7,9 @@ description: "Draft or revise briefs, proposals, reports, documentation and othe
 
 Read `.agents/jstack/rules.md` first and apply it.
 
+When only the artifact is requested, return only that artifact. Do not append
+process notes, check summaries or commentary after a requested final marker.
+
 1. **Set the contract.** Identify reader, purpose, medium, desired action and
    supplied facts. Follow existing voice, terminology and document structure.
    Read `references/editorial.md` beside this file. Preserve approved claims

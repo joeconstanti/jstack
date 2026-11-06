@@ -12,6 +12,8 @@ Read `.agents/jstack/rules.md` first and apply it.
    the ref resolves and the diff is not empty. For an artifact, identify its
    version and audience; no Git diff is required. Find the intent (request,
    issue or PR body) and applicable project conventions.
+   For multi-part work, map requested outcomes to artifact locations and flag
+   missing coverage or changes with no requested purpose; no new spec is needed.
 2. **Read the whole artifact or diff**, plus enough relevant context and tests to
    judge behavior. For code, look where grep stops: generated output,
    redirects and headers, sitemap and robots, analytics IDs, deploy filters.
@@ -28,8 +30,8 @@ Read `.agents/jstack/rules.md` first and apply it.
    a documented convention), so one kind does not hide the other.
 4. **Report findings first**, by severity. Give each location, trigger, impact,
    supporting evidence and smallest fix in one concise paragraph unless the
-   user requests another format. Omit routine scope and check summaries when
-   findings alone are requested. Qualify evidence where it affects the finding.
+   user requests another format. When findings alone are requested, include no
+   preamble, process recap or next-step section. Qualify material evidence gaps.
    With no findings, say "no actionable findings", not "no bugs".
 
 A review is not implementation and not merge approval.

@@ -192,3 +192,22 @@ alternatives; [acceptance cases](evaluation.md) distinguish manual walkthroughs
 from installation tests and independent behavioral evaluation. No upstream prose,
 code or assets were incorporated in this expansion. Design and knowledge work
 reuse review/verify rather than adding duplicate critique and export commands.
+
+## v0.5.0 reliability pass (6 November 2026)
+
+Original instructions and standard-library probes adapt these concepts; no
+upstream prose or implementation was copied:
+
+- Superpowers [`22f0b46`](https://github.com/obra/superpowers/tree/22f0b463e7a5e579904dd6211a520321035526f7),
+  `docs/testing.md` and `skills/systematic-debugging/SKILL.md`: separate packaging
+  tests from agent behavior; investigate one hypothesis before speculative fixes.
+- Spec Kit [`6463df8`](https://github.com/github/spec-kit/blob/6463df8d76242d458ece8a73697740bab4027ad0/templates/commands/analyze.md):
+  requirement coverage and unnecessary-work detection, adapted without its spec lifecycle.
+- GSD [`bdcaab2`](https://github.com/gsd-build/get-shit-done/blob/bdcaab2c752d9a33a1a1ca9acf3a3c81fb991815/get-shit-done/workflows/resume-project.md):
+  compact handoffs and rechecking saved state, adapted into existing project notes.
+- gstack [`cb8f9ea`](https://github.com/garrytan/gstack/blob/cb8f9eaeacf950180a5fc9ecb6e78a2787d35768/docs/evals/judge-controls-2026-10.md):
+  historical judge sensitivity gaps support measuring task outcomes rather than
+  adding another subjective score. That source marks its clarity judges removed.
+
+The [release report](release-0.5.0.md) retains observed failures and limitations.
+No new command, global setup, runtime, hooks or automatic publisher was added.
