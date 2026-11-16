@@ -81,7 +81,14 @@ def load_manifest(root):
 
 def validate_catalog():
     """Validate our intentionally small frontmatter dialect without a YAML runtime."""
-    skills = sorted((SOURCE / 'skills').iterdir())
+    catalog = SOURCE / 'skills'
+    # Never dereference source links: a release must be self-contained.
+    if catalog.is_symlink():
+        raise ValueError('Unsafe source symlink: skills')
+    for source in catalog.rglob('*'):
+        if source.is_symlink():
+            raise ValueError(f'Unsafe source symlink: {source.relative_to(SOURCE)}')
+    skills = sorted(catalog.iterdir())
     for skill in skills:
         text = (skill / 'SKILL.md').read_text(encoding='utf-8')
         parts = text.split('---\n', 2)
