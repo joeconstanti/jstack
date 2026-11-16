@@ -224,6 +224,12 @@ def run(args):
     root = project_root(args.project)
     previous = load_manifest(root)
     old = previous['files']
+    config = safe_path(root, '.agents/jstack/project.json', True)
+    if config.exists() and not config.is_file():
+        raise ValueError('project.json must be a file.')
+    if config.exists():
+        if not isinstance(json.loads(config.read_text()), dict):
+            raise ValueError('project.json must contain a JSON object.')
     if args.action == 'check':
         problems = []
         if not old:
@@ -245,11 +251,6 @@ def run(args):
         target = record(desired[relative]) if relative in desired else None
         if current != target:
             changes.append((relative, 'remove' if target is None else 'write'))
-    config = safe_path(root, '.agents/jstack/project.json', True)
-    if config.exists() and not config.is_file():
-        raise ValueError('project.json must be a file.')
-    if config.exists():
-        json.loads(config.read_text())
     for relative, action in changes:
         print(f'{action}: {relative}')
     print(f'{args.action}: {len(changes)} changes' + (' (dry run; no files changed)' if args.dry_run else ''))
