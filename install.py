@@ -179,13 +179,24 @@ def plan(root):
         if actual in resolved:
             raise ValueError(f'Aliased destinations collide: {relative}, {resolved[actual]}')
         resolved[actual] = relative
+    for actual, relative in resolved.items():
+        for parent in actual.parents:
+            if parent in resolved:
+                raise ValueError(f'Overlapping destinations: {relative}, {resolved[parent]}')
     return desired
 
 
 def inspect(root, old, desired):
     conflicts = []
     for relative in sorted(set(old) | set(desired)):
-        current = state(safe_path(root, relative))
+        path = safe_path(root, relative)
+        for parent in path.parents:
+            if parent == root:
+                break
+            if parent.exists() and not parent.is_dir():
+                conflicts.append(f'{relative}: parent is not a directory: {parent.relative_to(root)}')
+                break
+        current = state(path)
         expected = old.get(relative)
         if expected is not None:
             if current != expected:
