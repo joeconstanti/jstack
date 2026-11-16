@@ -98,6 +98,9 @@ def validate_catalog():
         description = json.loads(fields.get('description', 'null'))
         if not isinstance(description, str) or not description.strip():
             raise ValueError(f'{skill.name}: description must be a JSON-quoted string')
+        # Agent Skills specification limits, so every client accepts the catalog.
+        if len(skill.name) > 64 or len(description) > 1024:
+            raise ValueError(f'{skill.name}: name exceeds 64 or description exceeds 1024 characters')
         typed = skill.name in {'push', 'update-skills'}
         if fields.get('disable-model-invocation') != ('true' if typed else None):
             raise ValueError(f'{skill.name}: incorrect invocation policy')
