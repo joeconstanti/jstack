@@ -311,11 +311,17 @@ def run(args):
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('action', choices=['install', 'check', 'uninstall'])
-    parser.add_argument('--project', required=True, help='Git repository root; never a global skills directory')
+    parser.add_argument('action', choices=['install', 'check', 'uninstall', 'validate'])
+    parser.add_argument('--project', help='Git repository root; never a global skills directory')
     parser.add_argument('--dry-run', action='store_true')
     args = parser.parse_args()
+    if args.action != 'validate' and not args.project:
+        parser.error('--project is required for install, check and uninstall')
     try:
+        if args.action == 'validate':
+            skills = validate_catalog()
+            print(json.dumps({'ok': True, 'skills': [skill.name for skill in skills]}, indent=2))
+            return 0
         return run(args)
     except (ValueError, OSError, KeyError, json.JSONDecodeError) as error:
         print(str(error), file=sys.stderr)

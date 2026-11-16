@@ -182,6 +182,12 @@ Reload your coding agent to discover the files. In the target project, invoke
 python3 .agents/skills/doctor/scripts/doctor.py --project .
 ```
 
+Validate the source catalog without a target project or filesystem writes:
+
+```sh
+python3 install.py validate
+```
+
 Before writing, the installer validates skill names, frontmatter, the 60-line
 limit, local reference paths and typed-only policies. Frontmatter uses the small
 repository convention: plain `name`, JSON-quoted `description`, and optional

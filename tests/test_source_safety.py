@@ -1,8 +1,12 @@
 import unittest
-from test_spec_limits import SpecLimitTests, load_installer
+import test_spec_limits as helpers
+
+load_installer = helpers.load_installer
 
 
-class SourceSafetyTests(SpecLimitTests):
+class SourceSafetyTests(unittest.TestCase):
+    copy_source = helpers.SpecLimitTests.copy_source
+
     def test_external_source_file_is_rejected(self):
         source = self.copy_source()
         (source / 'skills/check/leak.txt').symlink_to('/etc/hosts')
