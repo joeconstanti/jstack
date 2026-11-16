@@ -211,3 +211,28 @@ upstream prose or implementation was copied:
 
 The [release report](release-0.5.0.md) retains observed failures and limitations.
 No new command, global setup, runtime, hooks or automatic publisher was added.
+
+## Project onboarding research (16 November 2026)
+
+Read the current upstream README or skill source below. This pass compares
+workflow patterns, not measured model quality or historical improvement rates.
+No upstream prose or implementation is copied into the new skill.
+
+| Source | Observed pattern | jstack decision |
+|--------|------------------|-----------------|
+| [tstack README](https://github.com/t3dotgg/tstack/blob/main/README.md) | Small named workflows and explicit skill dependencies | Keep start focused on onboarding and recipe selection; reuse check/design/verify |
+| [gstack README](https://github.com/garrytan/gstack/blob/main/README.md) | Office-hours discovery produces a design document consumed by later workflows; separate engineering/design review | Save setup decisions for downstream work; avoid importing its full review pipeline |
+| [Superpowers brainstorming](https://github.com/obra/superpowers/blob/main/skills/brainstorming/SKILL.md) | Interactive discovery, approach tradeoffs and a written design before implementation | Ask brief rounds of questions; preserve delegated defaults and avoid repeating settled choices |
+| [pstack setup](https://github.com/cursor/plugins/blob/main/pstack/skills/setup-pstack/SKILL.md) | Detect available capabilities, read current choices, present a recommendation, persist configuration | Inspect the project and reuse prior choices; its user-level model configuration is outside jstack's project-only scope |
+| [shadcn installation](https://ui.shadcn.com/docs/installation) | Official create flow recommends a visual preset and framework-specific setup | Use official generation rather than maintaining copied framework templates; record one consistent preset |
+
+The missing capability is project birth: an interactive product intake tied to a
+compatible framework, component system and publishing recipe. Research can
+compare stacks and design can choose a visual direction, but neither owns this
+onboarding-to-scaffold contract. That earns one new `/start` entrypoint, with
+recipe detail loaded only when needed. Existing project guidance and shared
+rules continue to own scope, publishing intent and evidence standards.
+
+Validation: the repository suite checks catalog frontmatter, local references,
+line limits, installer roundtrips and provider adapters. This does not establish
+that every recipe has been scaffolded or that a real user onboarding succeeded.

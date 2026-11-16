@@ -313,7 +313,7 @@ class InstallerTests(unittest.TestCase):
             self.assertFalse((self.root / '.agents').exists())
 
     def test_skill_catalog_has_valid_frontmatter_and_references(self):
-        names = {'pull', 'audit', 'edit', 'preview', 'pr', 'push', 'check', 'review', 'verify', 'doctor', 'update-skills', 'design', 'research', 'write'}
+        names = {'pull', 'audit', 'edit', 'preview', 'pr', 'push', 'check', 'review', 'verify', 'doctor', 'update-skills', 'design', 'research', 'write', 'start'}
         self.assertEqual({p.name for p in (SOURCE / 'skills').iterdir()}, names)
         for name in names:
             text = (SOURCE / 'skills' / name / 'SKILL.md').read_text()
