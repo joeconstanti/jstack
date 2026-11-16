@@ -9,6 +9,13 @@ import shutil
 import subprocess
 
 
+def metadata_path(root, relative):
+    path = root / relative
+    if not path.resolve().is_relative_to(root):
+        raise ValueError(f'Metadata path escapes the project: {relative}')
+    return path
+
+
 def read_object(path):
     value = json.loads(path.read_text())
     if not isinstance(value, dict):
@@ -20,7 +27,7 @@ def diagnose(root):
     result = {'tools': {name: bool(shutil.which(name)) for name in ['git', 'python3', 'node', 'npm', 'gh']},
               'problems': [], 'workflows': {}, 'unverified': ['agent reload/discovery', 'hook activation', 'SEO runtime dependencies',
                                                'authenticated accounts', 'rendered app and deployment']}
-    manifest_path = root / '.agents/jstack/manifest.json'
+    manifest_path = metadata_path(root, '.agents/jstack/manifest.json')
     manifest_files = {}
     if not manifest_path.is_file():
         result['problems'].append('jstack manifest missing')
@@ -47,9 +54,9 @@ def diagnose(root):
                             bool(path.stat().st_mode & 0o111) == expected['executable'])
             if not good:
                 result['problems'].append(f'missing or modified: {relative}')
-    config = root / '.agents/jstack/project.json'
+    config = metadata_path(root, '.agents/jstack/project.json')
     result['project_config'] = read_object(config) if config.is_file() else {}
-    package = root / 'package.json'
+    package = metadata_path(root, 'package.json')
     result['package_scripts'] = read_object(package).get('scripts', {}) if package.is_file() else {}
     if not isinstance(result['package_scripts'], dict):
         raise ValueError('package.json scripts must contain a JSON object.')

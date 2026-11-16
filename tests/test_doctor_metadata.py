@@ -34,3 +34,24 @@ class DoctorMetadataTests(unittest.TestCase):
         result, report = self.report()
         self.assertEqual(result.returncode, 1)
         self.assertIn('scripts', report['error'])
+
+    def test_external_metadata_symlinks_are_not_read(self):
+        outside = self.root.parent / 'private.json'
+        outside.write_text('{"secret": "must not appear"}')
+        for relative in ('package.json', '.agents/jstack/project.json', '.agents/jstack/manifest.json'):
+            with self.subTest(relative=relative):
+                path = self.root / relative
+                path.parent.mkdir(parents=True, exist_ok=True)
+                path.symlink_to(outside)
+                result, report = self.report()
+                self.assertEqual(result.returncode, 1)
+                self.assertIn('escapes the project', report['error'])
+                self.assertNotIn('secret', result.stdout)
+                path.unlink()
+
+    def test_internal_metadata_symlink_is_supported(self):
+        target = self.root / 'project-package.json'
+        target.write_text('{"scripts": {"test": "python3 -m unittest"}}')
+        (self.root / 'package.json').symlink_to(target.name)
+        _, report = self.report()
+        self.assertEqual(report['package_scripts'], {'test': 'python3 -m unittest'})
