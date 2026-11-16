@@ -70,14 +70,14 @@ def main():
             shutil.copy2(checkout / '.gitignore', stage / '.gitignore')
             # Adapt plugin-root tokens to a portable repository-relative path.
             for doc in stage.rglob('*.md'):
-                text = doc.read_text()
-                doc.write_text(text.replace('${CLAUDE_PLUGIN_ROOT}', DEST))
+                text = doc.read_text(encoding='utf-8')
+                doc.write_text(text.replace('${CLAUDE_PLUGIN_ROOT}', DEST), encoding='utf-8')
             (stage / 'JSTACK-INSTALL.json').write_text(json.dumps({
                 'source': REPO, 'commit': COMMIT, 'license': 'MIT',
                 'modification': 'Markdown plugin-root tokens replaced with project-relative path.',
                 'runtime_setup': False,
                 'aliases': [str(alias.relative_to(root)) for alias, _ in aliases.values()]
-            }, indent=2) + '\n')
+            }, indent=2) + '\n', encoding='utf-8')
             stage.rename(destination)
             installed = True
             for alias, target in aliases.values():
