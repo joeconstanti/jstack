@@ -58,6 +58,20 @@ def record(entry):
     return {k: v for k, v in entry.items() if k != 'data'}
 
 
+def managed_path(relative, kind):
+    """Only installer-owned namespaces may be claimed by a saved manifest."""
+    if relative in {'.agents/jstack/.gitignore', '.agents/jstack/LICENSE', '.agents/jstack/rules.md'}:
+        return kind == 'file'
+    name = r'[a-z0-9]+(?:-[a-z0-9]+)*'
+    if kind == 'file' and re.fullmatch(r'\.agents/skills/' + name + r'/.+', relative):
+        return True
+    providers = r'\.(?:claude|cursor|gemini|opencode)'
+    if kind == 'link' and re.fullmatch(providers + r'/skills/' + name, relative):
+        return True
+    return kind == 'file' and bool(re.fullmatch(
+        r'\.(?:cursor|opencode)/commands/' + name + r'\.md|\.gemini/commands/' + name + r'\.toml', relative))
+
+
 def load_manifest(root):
     path = safe_path(root, MANIFEST, True)
     if not path.exists():
@@ -66,6 +80,9 @@ def load_manifest(root):
     if not isinstance(manifest, dict) or manifest.get('schema') != 1 or not isinstance(manifest.get('files'), dict):
         raise ValueError('Invalid jstack manifest: expected schema 1 and a files object.')
     for relative, entry in manifest['files'].items():
+        safe_path(root, relative)
+        if Path(relative).as_posix() != relative or not managed_path(relative, entry.get('kind') if isinstance(entry, dict) else None):
+            raise ValueError(f'Invalid unowned manifest path: {relative}')
         if not isinstance(entry, dict):
             raise ValueError(f'Invalid manifest entry: {relative}')
         if entry.get('kind') == 'file':
