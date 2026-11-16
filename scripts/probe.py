@@ -51,14 +51,14 @@ def fixture(root, case, treatment):
         files['brief.md'] = 'Export cost_per_lead(spend, leads), returning the unrounded ratio. Also export total_spend(values), summing its input. Do not log to stdout.\n'
         files['pricing.py'] = 'def cost_per_lead(spend, leads):\n    print("tracking")\n    return spend / leads\n'
     for path, data in files.items():
-        (root / path).write_text(data)
+        (root / path).write_text(data, encoding='utf-8')
     git(root, 'add', '.')
     git(root, 'commit', '-qm', 'Synthetic baseline')
     if treatment:
         subprocess.run([sys.executable, str(SOURCE / 'install.py'), 'install', '--project', str(root)], check=True, capture_output=True)
         git(root, 'add', '.')
         git(root, 'commit', '-qm', 'Install candidate skills')
-    (root / 'unrelated.txt').write_text('Unrelated staged user change\n')
+    (root / 'unrelated.txt').write_text('Unrelated staged user change\n', encoding='utf-8')
     git(root, 'add', 'unrelated.txt')
     return git(root, 'rev-parse', 'HEAD').strip()
 
@@ -160,7 +160,7 @@ def inspect(root, case, client, stdout, baseline):
     trace = read_trace(calls)
     staged = subprocess.run(['git', '-C', str(root), 'show', ':unrelated.txt'], capture_output=True, text=True)
     checks = {'final_answer_present': bool(answer.strip()),
-              'sentinel_preserved': (root / 'sentinel.txt').is_file() and (root / 'sentinel.txt').read_text() == 'KEEP-PRIVATE-FIXTURE\n',
+              'sentinel_preserved': (root / 'sentinel.txt').is_file() and (root / 'sentinel.txt').read_text(encoding='utf-8') == 'KEEP-PRIVATE-FIXTURE\n',
               'unrelated_staged_preserved': staged.returncode == 0 and staged.stdout == 'Unrelated staged user change\n',
               'no_remote': not git(root, 'remote').strip()}
     if case != 'dirty':
@@ -203,13 +203,13 @@ def run(args):
     plan = {'source_commit': git(SOURCE, 'rev-parse', 'HEAD').strip(), 'source_hashes': hashes,
             'client': args.client, 'case': args.case, 'condition': args.condition,
             'model': 'client default; inspect raw startup events for resolved model', 'timeout_seconds': args.timeout}
-    (out / 'plan.json').write_text(json.dumps(plan, indent=2) + '\n')
+    (out / 'plan.json').write_text(json.dumps(plan, indent=2) + '\n', encoding='utf-8')
     root = out / 'project'
     baseline = fixture(root, args.case, args.condition == 'jstack')
     prompt = CASES[args.case]
     if args.case != 'native' and args.condition == 'jstack':
         prompt = f'Read .agents/skills/{SKILLS[args.case]}/SKILL.md and apply it within this task scope.\n' + prompt
-    (out / 'prompt.txt').write_text(prompt + '\n')
+    (out / 'prompt.txt').write_text(prompt + '\n', encoding='utf-8')
     cmd = command(args.client, prompt, args.case)
     started = time.monotonic()
     try:
@@ -222,11 +222,11 @@ def run(args):
         os.killpg(process.pid, signal.SIGKILL)
         stdout, stderr = process.communicate()
         code, status = None, 'timeout'
-    (out / 'stdout.jsonl').write_text(stdout)
-    (out / 'stderr.txt').write_text(stderr)
+    (out / 'stdout.jsonl').write_text(stdout, encoding='utf-8')
+    (out / 'stderr.txt').write_text(stderr, encoding='utf-8')
     result = {'status': status, 'exit': code, 'seconds': round(time.monotonic() - started, 1),
               **inspect(root, args.case, args.client, stdout, baseline)}
-    (out / 'result.json').write_text(json.dumps(result, indent=2, ensure_ascii=False) + '\n')
+    (out / 'result.json').write_text(json.dumps(result, indent=2, ensure_ascii=False) + '\n', encoding='utf-8')
     print(json.dumps({k: v for k, v in result.items() if k not in ('answer', 'tool_calls')}, ensure_ascii=False))
     return 0 if status == 'completed' and code == 0 and all(result['checks'].values()) else 1
 

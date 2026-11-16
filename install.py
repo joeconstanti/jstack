@@ -76,7 +76,7 @@ def load_manifest(root):
     path = safe_path(root, MANIFEST, True)
     if not path.exists():
         return {'files': {}}
-    manifest = json.loads(path.read_text())
+    manifest = json.loads(path.read_text(encoding='utf-8'))
     if not isinstance(manifest, dict) or manifest.get('schema') != 1 or not isinstance(manifest.get('files'), dict):
         raise ValueError('Invalid jstack manifest: expected schema 1 and a files object.')
     for relative, entry in manifest['files'].items():
@@ -129,7 +129,7 @@ def validate_catalog():
         if fields.get('disable-model-invocation') != ('true' if typed else None):
             raise ValueError(f'{skill.name}: incorrect invocation policy')
         policy = skill / 'agents/openai.yaml'
-        explicit = policy.is_file() and bool(re.search(r'^  allow_implicit_invocation: false$', policy.read_text(), re.M))
+        explicit = policy.is_file() and bool(re.search(r'^  allow_implicit_invocation: false$', policy.read_text(encoding='utf-8'), re.M))
         if explicit != typed:
             raise ValueError(f'{skill.name}: inconsistent Codex invocation policy')
         if 'Read `.agents/jstack/rules.md` first' not in parts[2]:
@@ -228,7 +228,7 @@ def run(args):
     if config.exists() and not config.is_file():
         raise ValueError('project.json must be a file.')
     if config.exists():
-        if not isinstance(json.loads(config.read_text()), dict):
+        if not isinstance(json.loads(config.read_text(encoding='utf-8')), dict):
             raise ValueError('project.json must contain a JSON object.')
     if args.action == 'check':
         problems = []
@@ -282,7 +282,7 @@ def run(args):
             if not config.exists():
                 atomic_write(config, b'{\n  "remote": "origin",\n  "main_branch": "main"\n}\n')
                 config_created = True
-            manifest = {'schema': 1, 'version': (SOURCE / 'VERSION').read_text().strip(),
+            manifest = {'schema': 1, 'version': (SOURCE / 'VERSION').read_text(encoding='utf-8').strip(),
                         'source': 'https://github.com/joeconstanti/jstack',
                         'files': {k: record(v) for k, v in desired.items()}}
             atomic_write(manifest_path, (json.dumps(manifest, indent=2, sort_keys=True) + '\n').encode())

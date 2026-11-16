@@ -17,7 +17,7 @@ def metadata_path(root, relative):
 
 
 def read_object(path):
-    value = json.loads(path.read_text())
+    value = json.loads(path.read_text(encoding='utf-8'))
     if not isinstance(value, dict):
         raise ValueError(f'{path.name} must contain a JSON object.')
     return value
