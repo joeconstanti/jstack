@@ -9,6 +9,13 @@ import shutil
 import subprocess
 
 
+def read_object(path):
+    value = json.loads(path.read_text())
+    if not isinstance(value, dict):
+        raise ValueError(f'{path.name} must contain a JSON object.')
+    return value
+
+
 def diagnose(root):
     result = {'tools': {name: bool(shutil.which(name)) for name in ['git', 'python3', 'node', 'npm', 'gh']},
               'problems': [], 'workflows': {}, 'unverified': ['agent reload/discovery', 'hook activation', 'SEO runtime dependencies',
@@ -18,7 +25,7 @@ def diagnose(root):
     if not manifest_path.is_file():
         result['problems'].append('jstack manifest missing')
     else:
-        manifest = json.loads(manifest_path.read_text())
+        manifest = read_object(manifest_path)
         if not isinstance(manifest, dict) or manifest.get('schema') != 1 or not isinstance(manifest.get('files'), dict):
             raise ValueError('Invalid jstack manifest: expected schema 1 and a files object.')
         manifest_files = manifest['files']
@@ -41,9 +48,11 @@ def diagnose(root):
             if not good:
                 result['problems'].append(f'missing or modified: {relative}')
     config = root / '.agents/jstack/project.json'
-    result['project_config'] = json.loads(config.read_text()) if config.is_file() else {}
+    result['project_config'] = read_object(config) if config.is_file() else {}
     package = root / 'package.json'
-    result['package_scripts'] = json.loads(package.read_text()).get('scripts', {}) if package.is_file() else {}
+    result['package_scripts'] = read_object(package).get('scripts', {}) if package.is_file() else {}
+    if not isinstance(result['package_scripts'], dict):
+        raise ValueError('package.json scripts must contain a JSON object.')
     result['lockfiles'] = [name for name in ['package-lock.json', 'pnpm-lock.yaml', 'yarn.lock', 'bun.lock', 'uv.lock', 'poetry.lock', 'Cargo.lock', 'go.sum'] if (root / name).exists()]
     result['seo'] = next((name for name in ['.agents/skills/seo/SKILL.md', '.agents/skills/claude-seo/skills/seo/SKILL.md'] if (root / name).is_file()), None)
     result['impeccable'] = (root / '.agents/skills/impeccable/SKILL.md').is_file()
