@@ -10,6 +10,20 @@ New commits to a PR cancel superseded runs for that PR only. Default-branch
 pushes use distinct commit groups so each merged commit retains its own result.
 Cancellation is not acceptance; the latest PR head must pass all three jobs.
 
+## Why these gates remain
+
+Catalog validation is the fast first gate: reject invalid skill metadata,
+references and invocation policies before integration tests. The complete
+unittest suite verifies project-only installation, collision/ownership boundaries,
+rollback, provider adapters and deterministic probe parsing. Python 3.11 covers
+the advertised minimum; 3.13 and 3.14 retain the requested newer-runtime
+compatibility checks against standard-library changes.
+
+There is one workflow, no dependency installation, app build, packaging or live
+model suite. The corrected PR scope is one run with three jobs, down from two
+runs with six jobs each (75% fewer job submissions per PR head). Main pushes keep
+three jobs, down from six. No assertion or substantive validation stage is removed.
+
 Required commands:
 
 ```sh
