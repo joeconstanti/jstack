@@ -36,6 +36,13 @@ def main():
         actual = subprocess.check_output(['git', '-C', str(checkout), 'rev-parse', 'HEAD'], text=True).strip()
         if actual != COMMIT:
             raise ValueError('Pinned SEO commit verification failed.')
+        # Do not dereference upstream links when copying the pinned instructions.
+        for name in ('skills', 'scripts', 'schema', 'data', 'pdf', 'agents',
+                     'LICENSE', 'README.md', 'requirements.txt', '.claude-plugin', '.gitignore'):
+            source = checkout / name
+            for item in (source, *source.rglob('*')):
+                if item.is_symlink():
+                    raise ValueError(f'Unsafe SEO source symlink: {item.relative_to(checkout)}')
         aliases = {}
         for skill in sorted((checkout / 'skills').iterdir()):
             if not (skill / 'SKILL.md').is_file():
