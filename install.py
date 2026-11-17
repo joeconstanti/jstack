@@ -142,6 +142,16 @@ def validate_catalog():
 
 
 def plan(root):
+    # Shared release inputs must be self-contained, just like skill sources.
+    for relative in ('LICENSE', 'VERSION', 'shared/rules.md'):
+        source = SOURCE / relative
+        for component in (source, *source.parents):
+            if component == SOURCE:
+                break
+            if component.is_symlink():
+                raise ValueError(f'Unsafe source symlink: {component.relative_to(SOURCE)}')
+        if not source.is_file():
+            raise ValueError(f'Missing source file: {relative}')
     skills = validate_catalog()
     desired = {}
     for source in sorted((SOURCE / 'skills').rglob('*')):
