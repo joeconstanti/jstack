@@ -1,20 +1,16 @@
 # Continuous integration
 
 `Check jstack` validates every pull request and every push to `main`. Topic
-branch pushes use the pull-request run, avoiding a duplicate six-job matrix.
-Open a PR to validate a topic branch. All PRs, including documentation changes,
-keep catalog validation and the full test matrix: Linux/macOS with Python
-3.11, 3.13 and 3.14. macOS uses the supported `macos-15-intel` image because
-GitHub reported arm64 runner acquisition failures; this retains macOS filesystem
-and symlink coverage but does not claim hosted Apple Silicon coverage. See the
-[official runner labels](https://docs.github.com/en/actions/reference/runners/github-hosted-runners).
-Do not add path filters that leave required checks pending.
+branch pushes use the pull-request run, avoiding duplicate validation.
+Open a PR to validate a topic branch. Every PR, including documentation changes,
+runs catalog validation and the complete unittest suite on Ubuntu with Python
+3.11, 3.13 and 3.14. Do not add path filters that leave required checks pending.
 
 New commits to a PR cancel superseded runs for that PR only. Default-branch
 pushes use distinct commit groups so each merged commit retains its own result.
-Cancellation is not acceptance; the latest PR head must pass every matrix job.
+Cancellation is not acceptance; the latest PR head must pass all three jobs.
 
-Run the same commands locally before publishing when local capacity is available:
+Required commands:
 
 ```sh
 python3 install.py validate
@@ -27,16 +23,31 @@ SEO tests use disposable offline fixtures; live client probes remain opt-in and
 are not part of this matrix. CI does not deploy, install project runtimes or
 certify native agent discovery/rendered behavior.
 
-Hosted macOS jobs can remain queued without executing a step. Inspect the job
-steps and annotations before calling this a test failure. A cancelled or failed
-run remains non-passing; wait for the current head's complete matrix rather than
-merging on a partial result or repeatedly rerunning an unchanged queue failure.
-On 17 November 2026, run `44131106158` passed five jobs but its macOS/Python 3.13
-job was cancelled before any steps ran; the run was marked failed. Its failure
-annotation was "The job was not acquired by Runner of type hosted even after
-multiple attempts", with macOS arm64 capacity notices. This is
-historical runner/cancellation evidence, not a passing six-job result.
+## Platform scope
 
-During coordinated campaigns, honor the shared heavy-local-verification slot;
-use focused checks and hosted CI while waiting. Retain actual failures, fix
-reproducible causes and rerun affected checks only after a relevant change.
+The installer and diagnostics use standard-library Python and Git. There is no
+native macOS app build, macOS-only test, platform conditional or platform skip in
+the test suite. Symlink confinement, executable modes, rollback, metadata and
+provider discovery fixtures run unchanged on Ubuntu. Hosted macOS is therefore
+not a required gate for this generic validation.
+
+Ubuntu does not establish macOS filesystem behavior, including case folding and
+filesystem-specific symlink/permission differences. When changing path handling,
+optionally run the same two commands on a local Mac and record the OS/Python and
+result separately. These checks are useful additional platform evidence, not a
+native-app or provider-discovery certification. No optional hosted workflow is
+needed for the current codebase.
+
+## Runner failures and local capacity
+
+On 17 November 2026, run `44131106158` passed five jobs but its macOS/Python 3.13
+job was cancelled before any steps ran. Its annotation was "The job was not
+acquired by Runner of type hosted even after multiple attempts", with arm64
+capacity notices. Intel macOS replacements also remained queued. Those historical
+runs are non-passing and superseded by the explicitly authorized Ubuntu-only
+workflow; they are not test failures or evidence of current acceptance.
+
+Inspect exact-head job steps and annotations before retrying. Fix reproducible
+failures rather than repeatedly rerunning an unchanged queue failure. During
+coordinated campaigns, honor the shared heavy-local-verification slot; use focused
+checks and hosted CI while waiting. Do not suppress failures or weaken assertions.
