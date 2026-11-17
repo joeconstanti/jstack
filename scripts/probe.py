@@ -94,62 +94,83 @@ def events(stdout):
     return result
 
 
+def object_field(record, key):
+    value = record.get(key)
+    return value if isinstance(value, dict) else {}
+
+
+def text_field(record, key):
+    value = record.get(key)
+    return value if isinstance(value, str) else ''
+
+
 def final_text(client, records):
-    if client == 'claude':
-        return next((e.get('result', '') for e in reversed(records) if e.get('type') == 'result'), '')
+    if client in ('claude', 'cursor'):
+        return next((text_field(e, 'result') for e in reversed(records)
+                     if e.get('type') == 'result' and isinstance(e.get('result'), str)), '')
     if client == 'codex':
-        return '\n'.join(e['item'].get('text', '') for e in records if e.get('item', {}).get('type') == 'agent_message')
-    if client == 'cursor':
-        return next((e.get('result', '') for e in reversed(records) if e.get('type') == 'result'), '')
+        return '\n'.join(text_field(object_field(e, 'item'), 'text') for e in records
+                         if object_field(e, 'item').get('type') == 'agent_message'
+                         and isinstance(object_field(e, 'item').get('text'), str))
     if client == 'gemini':
-        return ''.join(e.get('content', '') for e in records if e.get('type') == 'message' and e.get('role') == 'assistant')
-    return '\n'.join(e.get('part', {}).get('text', '') for e in records if e.get('type') == 'text')
+        return ''.join(text_field(e, 'content') for e in records
+                       if e.get('type') == 'message' and e.get('role') == 'assistant')
+    return '\n'.join(text_field(object_field(e, 'part'), 'text') for e in records
+                     if e.get('type') == 'text' and isinstance(object_field(e, 'part').get('text'), str))
 
 
 def tool_calls(client, records):
     calls = []
     completed = set()
     def blocks(event):
-        message = event.get('message')
-        content = message.get('content', []) if isinstance(message, dict) else []
+        content = object_field(event, 'message').get('content', [])
         return content if isinstance(content, list) else []
     for event in records:
         for block in blocks(event):
-            if isinstance(block, dict) and block.get('type') == 'tool_result' and not block.get('is_error'):
-                completed.add(block.get('tool_use_id'))
+            if (isinstance(block, dict) and block.get('type') == 'tool_result'
+                    and not block.get('is_error') and isinstance(block.get('tool_use_id'), str)):
+                completed.add(block['tool_use_id'])
     for e in records:
         if client in ('claude', 'cursor'):
             for block in blocks(e):
-                if isinstance(block, dict) and block.get('type') == 'tool_use' and block.get('id') in completed:
+                if (isinstance(block, dict) and block.get('type') == 'tool_use'
+                        and isinstance(block.get('id'), str) and block['id'] in completed):
                     calls.append(block)
             if e.get('type') == 'tool_call':
                 calls.append(e)
-        elif client == 'codex' and e.get('item', {}).get('type') in ('command_execution', 'mcp_tool_call'):
+        elif client == 'codex' and object_field(e, 'item').get('type') in ('command_execution', 'mcp_tool_call'):
             calls.append(e['item'])
         elif client == 'gemini' and e.get('type') == 'tool_use':
             calls.append(e)
         elif client == 'opencode' and e.get('type') == 'tool_use':
-            calls.append(e.get('part', e))
+            part = e.get('part', e)
+            if isinstance(part, dict):
+                calls.append(part)
     return calls
 
 
 def read_trace(calls):
-    """Only successful reads/commands count; glob results and failed tools do not."""
+    """Only successful reads/commands count; malformed payloads are not evidence."""
     reads = []
     for call in calls:
+        if not isinstance(call, dict) or not isinstance(call.get('state', {}), dict):
+            continue
         name = str(call.get('name', call.get('tool', ''))).lower()
         state = call.get('state', {})
         if state.get('status') in ('error', 'pending', 'running') or call.get('is_error'):
             continue
         if call.get('type') == 'command_execution':
             if call.get('exit_code') == 0 and call.get('status') == 'completed':
-                reads.append(call.get('command', ''))
-        elif 'readToolCall' in call.get('tool_call', {}):
-            read = call['tool_call']['readToolCall']
-            if 'success' in read.get('result', {}):
-                reads.append(json.dumps(read.get('args', {})))
+                reads.append(text_field(call, 'command'))
+        elif 'readToolCall' in object_field(call, 'tool_call'):
+            read = object_field(object_field(call, 'tool_call'), 'readToolCall')
+            if (isinstance(object_field(read, 'result').get('success'), dict)
+                    and isinstance(read.get('args'), dict)):
+                reads.append(json.dumps(read['args']))
         elif name in ('read', 'read_file', 'readfile'):
-            reads.append(json.dumps(call.get('input', call.get('parameters', state.get('input', call.get('tool_call', {}))))))
+            arguments = call.get('input', call.get('parameters', state.get('input', call.get('tool_call', {}))))
+            if isinstance(arguments, dict):
+                reads.append(json.dumps(arguments))
     return '\n'.join(reads)
 
 
