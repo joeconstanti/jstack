@@ -70,6 +70,32 @@ class EvidenceTests(unittest.TestCase):
             self.assertFalse(result['checks']['no_commit'])
             self.assertFalse(result['checks']['no_tracked_edits'])
 
+    def test_malformed_nested_events_do_not_crash_or_invent_answers(self):
+        records = [
+            {'item': None}, {'item': []}, {'item': {'type': 'agent_message', 'text': []}},
+            {'type': 'text', 'part': None}, {'type': 'text', 'part': {'text': 42}},
+            {'type': 'result', 'result': {'answer': 'not text'}},
+            {'type': 'message', 'role': 'assistant', 'content': None},
+            {'type': 'tool_use', 'part': []}, {'message': {'content': [None, []]}},
+        ]
+        for client in ('claude', 'cursor', 'codex', 'gemini', 'opencode'):
+            with self.subTest(client=client):
+                self.assertEqual(probe.final_text(client, records), '')
+                self.assertEqual(probe.read_trace(probe.tool_calls(client, records)), '')
+
+    def test_malformed_read_payloads_are_not_success_evidence(self):
+        calls = [None, [], {'name': 'Read', 'state': None},
+                 {'name': 'Read', 'state': []}, {'tool_call': None},
+                 {'tool_call': {'readToolCall': None}},
+                 {'tool_call': {'readToolCall': {'result': {'success': None}}}},
+                 {'tool_call': {'readToolCall': {'result': {'success': {}}, 'args': []}}},
+                 {'name': 'Read', 'input': None}]
+        self.assertEqual(probe.read_trace(calls), '')
+
+    def test_valid_answers_survive_adjacent_schema_noise(self):
+        valid = {'item': {'type': 'agent_message', 'text': 'answer'}}
+        self.assertEqual(probe.final_text('codex', [{'item': None}, valid, {'item': []}]), 'answer')
+
 
 if __name__ == '__main__':
     unittest.main()
