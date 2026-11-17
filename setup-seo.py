@@ -57,12 +57,28 @@ def main():
                 if alias.exists() or alias.is_symlink():
                     raise ValueError(f'Unmanaged SEO collision: {relative}; no files changed.')
                 aliases[actual_path] = (alias, os.path.relpath(canonical, alias.parent.resolve()))
+        stage = safe_path(root, DEST + '.jstack-stage', True)
+        if stage.exists() or stage.is_symlink():
+            raise ValueError('SEO staging directory exists; inspect it before retrying.')
+        # Include staging and canonical content in collision checks, not just aliases.
+        destinations = [destination, stage, *(alias for alias, _ in aliases.values())]
+        resolved = {}
+        for path in destinations:
+            actual_path = path.parent.resolve() / path.name
+            if actual_path in resolved:
+                raise ValueError(f'SEO destinations overlap: {path.relative_to(root)}')
+            resolved[actual_path] = path
+        for actual_path, path in resolved.items():
+            if any(parent in resolved for parent in actual_path.parents):
+                raise ValueError(f'SEO destinations overlap: {path.relative_to(root)}')
+            for parent in path.parents:
+                if parent == root:
+                    break
+                if (parent.exists() or parent.is_symlink()) and not parent.is_dir():
+                    raise ValueError(f'SEO parent is not a directory: {parent.relative_to(root)}')
         print(f'Install Claude SEO {COMMIT} under {DEST}; {len(aliases)} discovery links. Runtime setup is separate.')
         if args.dry_run:
             return 0
-        stage = safe_path(root, DEST + '.jstack-stage', True)
-        if stage.exists():
-            raise ValueError('SEO staging directory exists; inspect it before retrying.')
         created = []
         installed = False
         try:
