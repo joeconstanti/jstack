@@ -252,6 +252,14 @@ def run(args):
         print(json.dumps({'version': previous.get('version'), 'managed_paths': len(old), 'ok': not problems, 'problems': problems}, indent=2))
         return 1 if problems else 0
     desired = plan(root) if args.action == 'install' else {}
+    # Metadata is project-owned, and cannot alias content this operation manages.
+    for relative in (MANIFEST, '.agents/jstack/project.json'):
+        metadata = safe_path(root, relative, True).resolve()
+        for managed in set(old) | set(desired):
+            path = safe_path(root, managed)
+            actual = path.parent.resolve() / path.name
+            if metadata == actual or metadata in actual.parents or actual in metadata.parents:
+                raise ValueError(f'Installer metadata overlaps managed content: {relative}, {managed}')
     conflicts = inspect(root, old, desired)
     if conflicts:
         raise ValueError('No files changed.\n' + '\n'.join(conflicts))
