@@ -106,6 +106,8 @@ def validate_catalog():
         if source.is_symlink():
             raise ValueError(f'Unsafe source symlink: {source.relative_to(SOURCE)}')
     skills = sorted(catalog.iterdir())
+    if not skills:
+        raise ValueError('Skill catalog is empty.')
     for skill in skills:
         text = (skill / 'SKILL.md').read_text(encoding='utf-8')
         parts = text.split('---\n', 2)
@@ -141,7 +143,7 @@ def validate_catalog():
     return skills
 
 
-def plan(root):
+def validate_release():
     # Shared release inputs must be self-contained, just like skill sources.
     for relative in ('LICENSE', 'VERSION', 'shared/rules.md'):
         source = SOURCE / relative
@@ -152,7 +154,11 @@ def plan(root):
                 raise ValueError(f'Unsafe source symlink: {component.relative_to(SOURCE)}')
         if not source.is_file():
             raise ValueError(f'Missing source file: {relative}')
-    skills = validate_catalog()
+    return validate_catalog()
+
+
+def plan(root):
+    skills = validate_release()
     desired = {}
     for source in sorted((SOURCE / 'skills').rglob('*')):
         if source.is_file() and '__pycache__' not in source.parts and source.suffix != '.pyc':
@@ -337,7 +343,7 @@ def main():
         parser.error('--project is required for install, check and uninstall')
     try:
         if args.action == 'validate':
-            skills = validate_catalog()
+            skills = validate_release()
             print(json.dumps({'ok': True, 'skills': [skill.name for skill in skills]}, indent=2))
             return 0
         return run(args)
