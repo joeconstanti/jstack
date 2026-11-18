@@ -42,7 +42,10 @@ when publishing a comparison. Never infer a model from its answer.
 
 The runner sets both process cwd and `PWD` to the fixture. OpenCode otherwise used
 an inherited checkout in the initial trial. Timeouts kill the probe's process
-group, preserving partial stdout/stderr. Existing output is never overwritten.
+group, preserving partial stdout/stderr. If an executable passes the client
+availability check but fails to start, the runner records `launch_error` with
+a null exit code and the operating system diagnostic. It exits nonzero.
+Existing output is never overwritten.
 Read evidence excludes directory listings, incomplete reads and failed tools.
 The native lexical checks are coarse filters, not semantic proof.
 

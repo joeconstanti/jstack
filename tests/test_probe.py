@@ -1,8 +1,12 @@
 """Deterministic guards for the opt-in live evaluator; no model calls."""
+import argparse
+import contextlib
+import io
 import json
 from pathlib import Path
 import tempfile
 import unittest
+from unittest.mock import patch
 
 from scripts import probe
 
@@ -95,6 +99,26 @@ class EvidenceTests(unittest.TestCase):
     def test_valid_answers_survive_adjacent_schema_noise(self):
         valid = {'item': {'type': 'agent_message', 'text': 'answer'}}
         self.assertEqual(probe.final_text('codex', [{'item': None}, valid, {'item': []}]), 'answer')
+
+    def test_client_launch_failure_retains_attempt_evidence(self):
+        with tempfile.TemporaryDirectory() as temp:
+            root = Path(temp)
+            out = root / 'evidence'
+            args = argparse.Namespace(output=out, client='codex', case='review', condition='control', timeout=1)
+            stdout, stderr = io.StringIO(), io.StringIO()
+            with (patch.object(probe, 'command', return_value=[str(root / 'missing-client')]),
+                  contextlib.redirect_stdout(stdout), contextlib.redirect_stderr(stderr)):
+                self.assertEqual(probe.run(args), 1)
+
+            result = json.loads((out / 'result.json').read_text(encoding='utf-8'))
+            self.assertEqual(result['status'], 'launch_error')
+            self.assertIsNone(result['exit'])
+            self.assertEqual(result['tool_calls'], [])
+            self.assertEqual(json.loads(stdout.getvalue())['status'], 'launch_error')
+            self.assertIn('Client failed to start', stderr.getvalue())
+            self.assertEqual((out / 'stderr.txt').read_text(encoding='utf-8'), stderr.getvalue())
+            self.assertEqual((out / 'stdout.jsonl').read_bytes(), b'')
+            self.assertTrue((out / 'plan.json').is_file())
 
 
 if __name__ == '__main__':
