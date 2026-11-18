@@ -8,7 +8,7 @@ runs catalog validation and the complete unittest suite on Ubuntu with Python
 
 New commits to a PR cancel superseded runs for that PR only. Default-branch
 pushes use distinct commit groups so each merged commit retains its own result.
-Cancellation is not acceptance; the latest PR head must pass all three jobs.
+The latest PR head must pass validation on all three runtimes.
 
 ## Why these gates remain
 
@@ -20,9 +20,11 @@ the advertised minimum; 3.13 and 3.14 retain the requested newer-runtime
 compatibility checks against standard-library changes.
 
 There is one workflow, no dependency installation, app build, packaging or live
-model suite. The corrected PR scope is one run with three jobs, down from two
-runs with six jobs each (75% fewer job submissions per PR head). Main pushes keep
-three jobs, down from six. No assertion or substantive validation stage is removed.
+model suite. Each run uses one Ubuntu job and one checkout, down from three
+jobs and three checkouts. Python versions run in sequence, which reduces runner
+demand and may increase elapsed time. A setup failure skips only that version's commands.
+A validation or suite failure fails the job while the other versions still run.
+The full check runs for every change, including changes of uncertain scope.
 
 Required commands:
 
@@ -34,7 +36,7 @@ python3 -m unittest discover -s tests -v
 For workflow edits, also run `actionlint .github/workflows/check.yml` when installed.
 No third-party Python packages or authenticated clients are needed for CI.
 SEO tests use disposable offline fixtures; live client probes remain opt-in and
-are not part of this matrix. CI does not deploy, install project runtimes or
+are not part of these checks. CI does not deploy, install project runtimes or
 certify native agent discovery/rendered behavior.
 
 ## Platform scope

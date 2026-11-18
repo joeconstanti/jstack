@@ -12,14 +12,45 @@ jobs:
   test:
     runs-on: ubuntu-latest
     timeout-minutes: 10
-    strategy:
-      fail-fast: false
-      matrix:
-        python: ['3.11', '3.13', '3.14']
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
+        id: checkout
+      - name: Set up Python 3.11
+        if: ${{ !cancelled() && steps.checkout.outcome == 'success' }}
+        uses: actions/setup-python@v5
+        id: python11
         with:
-          python-version: ${{ matrix.python }}
-      - run: python3 install.py validate
-      - run: python3 -m unittest discover -s tests -v
+          python-version: '3.11'
+      - name: Validate and test on Python 3.11
+        if: ${{ !cancelled() && steps.python11.outcome == 'success' }}
+        env:
+          CHECK_PYTHON: ${{ steps.python11.outputs.python-path }}
+        run: |
+          "$CHECK_PYTHON" install.py validate
+          "$CHECK_PYTHON" -m unittest discover -s tests -v
+      - name: Set up Python 3.13
+        if: ${{ !cancelled() && steps.checkout.outcome == 'success' }}
+        uses: actions/setup-python@v5
+        id: python13
+        with:
+          python-version: '3.13'
+      - name: Validate and test on Python 3.13
+        if: ${{ !cancelled() && steps.python13.outcome == 'success' }}
+        env:
+          CHECK_PYTHON: ${{ steps.python13.outputs.python-path }}
+        run: |
+          "$CHECK_PYTHON" install.py validate
+          "$CHECK_PYTHON" -m unittest discover -s tests -v
+      - name: Set up Python 3.14
+        if: ${{ !cancelled() && steps.checkout.outcome == 'success' }}
+        uses: actions/setup-python@v5
+        id: python14
+        with:
+          python-version: '3.14'
+      - name: Validate and test on Python 3.14
+        if: ${{ !cancelled() && steps.python14.outcome == 'success' }}
+        env:
+          CHECK_PYTHON: ${{ steps.python14.outputs.python-path }}
+        run: |
+          "$CHECK_PYTHON" install.py validate
+          "$CHECK_PYTHON" -m unittest discover -s tests -v
