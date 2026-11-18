@@ -237,12 +237,18 @@ def run(args):
         process = subprocess.Popen(cmd, cwd=root, stdout=subprocess.PIPE, stderr=subprocess.PIPE,
                                    text=True, stdin=subprocess.DEVNULL, start_new_session=True,
                                    env={**os.environ, 'PWD': str(root)})
-        stdout, stderr = process.communicate(timeout=args.timeout)
-        code, status = process.returncode, 'completed'
-    except subprocess.TimeoutExpired:
-        os.killpg(process.pid, signal.SIGKILL)
-        stdout, stderr = process.communicate()
-        code, status = None, 'timeout'
+    except OSError as error:
+        stdout, stderr = '', f'Client failed to start: {error}\n'
+        code, status = None, 'launch_error'
+        print(stderr, file=sys.stderr, end='')
+    else:
+        try:
+            stdout, stderr = process.communicate(timeout=args.timeout)
+            code, status = process.returncode, 'completed'
+        except subprocess.TimeoutExpired:
+            os.killpg(process.pid, signal.SIGKILL)
+            stdout, stderr = process.communicate()
+            code, status = None, 'timeout'
     (out / 'stdout.jsonl').write_text(stdout, encoding='utf-8')
     (out / 'stderr.txt').write_text(stderr, encoding='utf-8')
     result = {'status': status, 'exit': code, 'seconds': round(time.monotonic() - started, 1),
