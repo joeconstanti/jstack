@@ -12,9 +12,11 @@ Choose the smallest recipe that supports the first real user flow.
 | Interactive dashboard or client app with an existing API | React + Vite + TypeScript + Tailwind + shadcn/ui; choose routing only if needed | Static host with route fallback; API/auth must live in a compatible backend |
 | App requiring server rendering, server endpoints or integrated authenticated flows | Next.js App Router + TypeScript + Tailwind + shadcn/ui | Vercel, or a documented Node/container host; static export only if all required features support it |
 
-For mobile, desktop, ecommerce or a mandated ecosystem, propose an appropriate
-official starter instead of forcing a web recipe. Resolve its UI and release
-requirements separately; do not add a second framework just to match this table.
+For mobile, desktop, ecommerce or a mandated ecosystem, choose an official
+starter that fits the target platforms, distribution and runtime constraints.
+For a server script or scheduled job, start with the existing runtime's script
+or CLI conventions. Identify how it will run, how it receives configuration
+and what should happen when it fails.
 
 ## Component and design consistency
 

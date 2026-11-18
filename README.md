@@ -38,7 +38,7 @@
 
 | Command | Outcome | Side effects |
 |---------|---------|--------------|
-| `/start [idea]` | Mini onboarding, coherent stack selection and a verified first flow | Project docs, app scaffolding and dependencies; no automatic publishing |
+| `/start [idea]` | Codebase inspection, onboarding questions and a prototype plan | Starter scaffold where needed and a root `PLAN.md` with parallel tasks |
 | `/research [question]` | Cited synthesis or decision brief with source limitations and tradeoffs | Reads sources; saves only when requested or required by project workflow |
 | `/write [artifact]` | Draft or revise proposals, reports, documentation and other prose | Requested draft/file edits; no sending or publishing |
 | `/design [target]` | Visual direction or critique for interfaces, presentations and documents | Findings/brief; artifact edits only when requested |
@@ -69,9 +69,10 @@ Every skill first reads one shared file, `.agents/jstack/rules.md`. It holds the
 context, scope, proof and outcome rules once, so each SKILL.md stays short. Its
 proof ladder (stated, cited, ran, observed) is how every skill reports evidence.
 
-For a new project, `/start` discovers the goal, selects a compatible framework,
-component system and publishing plan, records the choices and scaffolds the first
-flow. Reruns reuse those choices. See the [starting recipes](skills/start/references/recipes.md).
+`/start` inspects the target folder and asks about unresolved build or rebuild
+requirements. It scaffolds a compatible starter where needed, then writes a root
+`PLAN.md` with parallel tasks, dependencies and acceptance criteria for the
+prototype. Reruns preserve plan progress. See the [starting recipes](skills/start/references/recipes.md).
 
 A typical change can use `/pull` → `/preview` or `/edit` → `/check` → `/review` →
 `/verify` → `/pr`. Each workflow also works on its own. `/push` is the direct-main

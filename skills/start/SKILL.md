@@ -1,48 +1,43 @@
 ---
 name: start
-description: "Onboard a new project: discover what the user wants to build, choose a coherent stack and publishing plan, then scaffold the first working flow. Use for /start or project setup from scratch; ordinary edits use existing workflows."
+description: "Inspect a project, interview the user about what they want to build or rebuild, scaffold a suitable starter when needed, and write PLAN.md for the initial build. Use for /start or project kickoff."
 ---
 
 # start
 
 Read `.agents/jstack/rules.md` first and apply it.
 
-1. **Locate the project.** Inspect guidance, files, Git state, manifests and
-   existing setup decisions. Treat a nonempty project as an existing system;
-   retain its stack unless migration was requested. Outside a repository,
-   establish the intended directory before creating anything. This skill sets
-   up an app; installing jstack itself remains the project-only installer's job.
-2. **Run a mini onboarding.** Start with “What are you building, who is it for,
-   and what should someone be able to do first?” Reuse answers already given.
-   Ask at most three related questions per round, in plain language with a
-   recommended option where useful. Resolve only decisions that change setup:
-   site/app/platform, required data/auth/payments/content editing, visual
-   references, team familiarity, and hosting/budget constraints. Do not make
-   users choose libraries before understanding their needs. Wait for answers;
-   if they ask you to choose defaults, state those and proceed.
-3. **Choose one coherent recipe.** Read `references/recipes.md` beside this
-   file. Recommend a framework, component system, styling, package manager,
-   data services when needed, and compatible publishing target. Explain why
-   each fits; offer one alternative only for a consequential tradeoff. Verify
-   current official scaffolding and host compatibility before running commands.
-   Summarize the chosen setup and first working flow; ask only about unresolved
-   consequential choices, not decisions the user has already delegated.
-4. **Record and scaffold.** Save the goal, first flow, recipe, design choices,
-   selected versions/template source, local commands, deployment plan and open
-   decisions in existing project docs, or `docs/project-setup.md` if none fit.
-   Scaffold in a temporary sibling directory when a generator requires an empty
-   destination, inspect its output and copy only nonconflicting app files.
-   Keep one lockfile and component system. Install app dependencies with the
-   existing runtime; report a missing runtime rather than silently installing it.
-   Add environment-variable names and placeholders, never credentials. Configure
-   only requested local publishing files; account creation, paid resources,
-   remote repositories, pushes and deployment need explicit user intent.
-5. **Prove the starting point.** Implement the smallest representative flow
-   with the chosen components and realistic states. Use the check skill for
-   available build/lint checks and verify for rendered acceptance. Distinguish
-   mocks from connected services. Document setup gaps and hosting prerequisites;
-   a deploy config is not a deployed app. Update project command hints only
-   with observed commands, preserving unrelated settings.
-6. **Hand over** the recipe and rationale, changed files, run/check commands,
-   evidence and the next product step. On rerun, resume the saved choices and
-   fill gaps rather than re-interviewing or regenerating the project.
+1. **Inspect the target folder before asking questions.** Read project guidance,
+   Git state, manifests, lockfiles, entry points, tests and existing plans.
+   Identify what already runs, what can be reused and which decisions are open.
+   Outside a repository, establish the intended folder before writing.
+2. **Interview the user.** Briefly share what you found, then ask about gaps that
+   affect the build. Ask what they want to build or rebuild, who it is for and
+   what the first usable version must do, wherever those answers are missing.
+   Consider websites, web apps, desktop or mobile apps, server scripts and
+   other project types. For a rebuild, establish what must carry over. Ask up
+   to three related questions per round about relevant constraints, such as
+   target platforms, data, integrations, design or hosting. Wait for answers
+   to consequential questions unless the user delegates those decisions.
+3. **Choose and scaffold the starter in the target folder.** Use
+   `references/recipes.md` to recommend a fitting stack or template. Reuse
+   the existing setup when it fits. Verify official scaffold instructions
+   before running a generator. If it requires an empty folder, generate in a
+   temporary sibling, inspect the output and copy only nonconflicting files.
+   Use the project's package manager and runtime. Record the template source,
+   versions, configuration names and any publishing prerequisites. Run the
+   available starter checks and record their results and any setup blockers.
+4. **Write or update root `PLAN.md`.** Make it the tracker for the initial
+   prototype or build. Record the agreed goal, first usable flow, scope,
+   stack, constraints and open decisions. Use `- [ ]` tasks with stable IDs,
+   concrete deliverables, file or module ownership, dependencies and
+   checkable acceptance criteria. Group tasks into parallel workstreams with
+   nonoverlapping edits. Put shared interfaces or prerequisites first and
+   make integration and end-to-end verification explicit dependent tasks.
+   Include the relevant run and check commands.
+5. **Hand over the scaffold and plan.** Make each task self-contained enough
+   for a subagent to pick up and tick off after verification. Have agents
+   report completion to the coordinator when concurrent edits to `PLAN.md`
+   would conflict. Preserve existing plan items and progress on reruns.
+   Mark only verified work complete. Leave prototype implementation to the
+   plan unless the user also asks to execute it.
