@@ -5,7 +5,8 @@ Every jstack skill reads this file first. Skills hold only their own steps.
 ## Context
 
 - Project guidance (AGENTS.md, CLAUDE.md, CONTEXT.md, README, contributing
-  notes) outranks these skills. Use its terms.
+  notes) outranks these skills. Use its terms. Read the applicable glossary
+  and ADRs when working in an area; follow context maps for package-specific terms.
 - `.agents/jstack/project.json` holds optional hints (remote, main branch, site
   URL, dev, preview and check commands), not permission to widen the task.
   Discover a missing hint from manifests, lockfiles, scripts and CI. For design

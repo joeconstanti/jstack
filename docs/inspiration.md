@@ -236,3 +236,29 @@ rules continue to own scope, publishing intent and evidence standards.
 Validation: the repository suite checks catalog frontmatter, local references,
 line limits, installer roundtrips and provider adapters. This does not establish
 that every recipe has been scaffolded or that a real user onboarding succeeded.
+
+## Grill workflows (20 November 2026)
+
+Adapted from Matt Pocock's skills at
+[`abeeaf9`](https://github.com/mattpocock/skills/tree/abeeaf95660ba9e8b7c753eb38f441ca707a8823):
+`skills/productivity/grilling`, `skills/engineering/domain-modeling`, and
+`skills/engineering/setup-matt-pocock-skills` (MIT). Each new distributed skill
+retains the upstream copyright and license in its own `LICENSE` file.
+
+- `grill` adds a decision interview: dependent questions, concrete counterexamples,
+  recommendations and explicit confirmation of shared understanding. It does not
+  scaffold a project like `start`, or produce findings like `review`.
+- `grill-with-docs` reuses that interview and records resolved terms and selected
+  decisions during it. It needs persistent domain modeling, not merely a review
+  followed by a writing task.
+- Setup learning: discover existing conventions before asking, keep setup optional
+  for soft dependencies, and create glossary/ADR files only when there is content.
+  Retain legacy context names and existing package boundaries. These workflows do
+  not need tracker setup, labels, new agent guidance or installer configuration.
+- Adaptations: short question rounds, no mandatory delegation, normal skill
+  discovery, and no automatic implementation. Only publishing and self-update
+  retain jstack's typed-only policy.
+
+Validation covers catalog/frontmatter, provider adapters, installed attribution,
+shared interview availability, integrity checks and uninstall. It does not prove
+model interview quality; that requires real session evaluation.

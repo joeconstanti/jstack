@@ -170,6 +170,19 @@ class InstallerTests(unittest.TestCase):
         for name in ('design', 'research', 'write'):
             self.assertFalse(any(p.is_file() for p in (self.root / '.agents/skills' / name).rglob('*')))
 
+    def test_grill_skills_install_with_dependency_and_attribution(self):
+        self.run_installer()
+        for name in ('grill', 'grill-with-docs'):
+            canonical = self.root / '.agents/skills' / name
+            self.assertTrue((canonical / 'SKILL.md').is_file())
+            self.assertIn('Copyright (c) 2026 Matt Pocock', (canonical / 'LICENSE').read_text())
+            for provider in ('.claude', '.cursor', '.gemini', '.opencode'):
+                self.assertEqual((self.root / provider / 'skills' / name).resolve(), canonical.resolve())
+        self.run_installer('check')
+        self.run_installer('uninstall')
+        for name in ('grill', 'grill-with-docs'):
+            self.assertFalse((self.root / '.agents/skills' / name / 'SKILL.md').exists())
+
     def test_catalog_expansion_update_preserves_config_and_rejects_new_collision(self):
         # Simulate the preceding catalog, then update via the real CLI.
         old_source = Path(self.temp.name) / 'old-source'
@@ -203,7 +216,7 @@ class InstallerTests(unittest.TestCase):
 
     def test_adapters_load_canonical_skill_and_keep_arguments(self):
         self.run_installer()
-        for name in ('design', 'research', 'write', 'push'):
+        for name in ('design', 'research', 'write', 'push', 'grill', 'grill-with-docs'):
             for provider in ('.cursor', '.gemini', '.opencode'):
                 suffix = '.toml' if provider == '.gemini' else '.md'
                 content = (self.root / provider / 'commands' / (name + suffix)).read_text()
@@ -313,7 +326,7 @@ class InstallerTests(unittest.TestCase):
             self.assertFalse((self.root / '.agents').exists())
 
     def test_skill_catalog_has_valid_frontmatter_and_references(self):
-        names = {'pull', 'audit', 'edit', 'preview', 'pr', 'push', 'check', 'review', 'verify', 'doctor', 'update-skills', 'design', 'research', 'write', 'start'}
+        names = {'pull', 'audit', 'edit', 'preview', 'pr', 'push', 'check', 'review', 'verify', 'doctor', 'update-skills', 'design', 'research', 'write', 'start', 'grill', 'grill-with-docs'}
         self.assertEqual({p.name for p in (SOURCE / 'skills').iterdir()}, names)
         for name in names:
             text = (SOURCE / 'skills' / name / 'SKILL.md').read_text()

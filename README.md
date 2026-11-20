@@ -12,7 +12,7 @@
 
 ---
 
-**Fifteen focused workflows for code, design and knowledge work with agents. Install inside a project. Keep the same habits across stacks and tools.**
+**Seventeen focused workflows for code, design and knowledge work with agents. Install inside a project. Keep the same habits across stacks and tools.**
 
 [Commands](#commands) • [Quick Start](#quick-start) • [Agent Support](#agent-support) • [Report Bug](https://github.com/joeconstanti/jstack/issues)
 
@@ -26,7 +26,7 @@
 |---------|--------------|
 | **Project-only installation** | Writes inside an explicitly selected Git repository; refuses global destinations |
 | **Shared skill source** | Canonical `.agents/skills/` files with provider discovery links and command adapters |
-| **Fifteen focused commands** | Research, write, design, maintain and verify scoped work |
+| **Seventeen focused commands** | Research, write, design, maintain and verify scoped work |
 | **Stack discovery** | Reads project docs, scripts, lockfiles and CI rather than assuming a framework |
 | **Existing tools respected** | Reuses local Claude SEO and Impeccable installations |
 | **Reviewable updates** | Dry runs, file hashes, collision checks and a scoped uninstall |
@@ -38,6 +38,8 @@
 
 | Command | Outcome | Side effects |
 |---------|---------|--------------|
+| `/grill [idea]` | Test a plan through questions, examples and explicit decisions | Interview in chat; no implementation or document edits |
+| `/grill-with-docs [idea]` | Test a plan while recording agreed terms and significant choices | Local glossary and ADR edits; no implementation |
 | `/start [idea]` | Codebase inspection, onboarding questions and a prototype plan | Starter scaffold where needed and a root `PLAN.md` with parallel tasks |
 | `/research [question]` | Cited synthesis or decision brief with source limitations and tradeoffs | Reads sources; saves only when requested or required by project workflow |
 | `/write [artifact]` | Draft or revise proposals, reports, documentation and other prose | Requested draft/file edits; no sending or publishing |
@@ -125,7 +127,7 @@ upstream research, scoring rubric, limitations and validation cases.
 
 ```text
 jstack/
-├── skills/                  # Fifteen short SKILL.md workflows
+├── skills/                  # Seventeen short SKILL.md workflows
 │   └── doctor/scripts/      # Read-only installation diagnostics
 ├── shared/rules.md          # Context, scope, proof and outcome rules all skills read
 ├── install.py               # Project-only install / check / uninstall
@@ -294,6 +296,12 @@ For example:
   "check_commands": ["npm run build", "npm test"]
 }
 ```
+
+`/grill-with-docs` discovers the existing glossary, context files and ADR layout
+from project guidance, including `docs/agents/domain.md` when present. It needs
+no setup command. Without an existing convention, it uses `GLOSSARY.md` and
+`docs/adr/`, creating files only when there is an agreed term or decision to record.
+It preserves existing `CONTEXT.md` names and package-specific layouts.
 
 These settings are hints for the agent, not shell commands the installer executes.
 Keep secrets out of this file. Use project guidance for detailed conventions and
