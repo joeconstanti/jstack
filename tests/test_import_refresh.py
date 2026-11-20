@@ -16,9 +16,9 @@ class ImportRefreshTests(unittest.TestCase):
     setUp = helpers.SEOSetupTests.setUp
     invoke = helpers.SEOSetupTests.invoke
 
-    def refresh(self, dry_run=False):
+    def refresh(self, dry_run=False, refresh_imports=True):
         args = argparse.Namespace(action='install', project=str(self.root),
-                                  dry_run=dry_run, refresh_imports=True)
+                                  dry_run=dry_run, refresh_imports=refresh_imports)
         with patch.object(upstream, 'checkout', self.checkout):
             return install.run(args)
 
@@ -32,6 +32,12 @@ class ImportRefreshTests(unittest.TestCase):
             yield self.latest_seo, self.revision
 
     def test_same_jstack_release_refreshes_both_sources_and_preserves_runtime(self):
+        self.assertEqual(install.run(argparse.Namespace(
+            action='install', project=str(self.root), dry_run=False)), 0)
+        manifest_path = self.root / install.MANIFEST
+        previous = json.loads(manifest_path.read_text())
+        previous['version'] = '0.5.0'
+        manifest_path.write_text(json.dumps(previous))
         self.assertEqual(self.invoke(), 0)
         seo_root = self.root / upstream.SEO_DEST
         runtime = seo_root / 'runtime-state.json'
@@ -55,10 +61,11 @@ class ImportRefreshTests(unittest.TestCase):
 
         self.revision = 'a' * 40
         seo_source.write_text('# Updated SEO')
-        self.assertEqual(self.refresh(dry_run=True), 0)
-        self.assertFalse(grill.exists())
+        bundled_grill = grill.read_text()
+        self.assertEqual(self.refresh(dry_run=True, refresh_imports=False), 0)
+        self.assertEqual(grill.read_text(), bundled_grill)
         self.assertEqual(seo_skill.read_text(), f'# SEO {upstream.SEO_DEST}')
-        self.assertEqual(self.refresh(), 0)
+        self.assertEqual(self.refresh(refresh_imports=False), 0)
         self.assertIn('name: grill\n', grill.read_text())
         self.assertEqual(seo_skill.read_text(), '# Updated SEO')
         self.assertIn('!/skills/seo/template-REPORT.md', (seo_root / '.gitignore').read_text())

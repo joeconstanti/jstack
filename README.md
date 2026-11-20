@@ -170,13 +170,13 @@ Clone jstack **beside your projects**, then name the target repository explicitl
 ```sh
 git clone https://github.com/joeconstanti/jstack.git
 cd jstack
-git checkout v0.5.0
+git checkout v0.6.0
 python3 install.py install --project /absolute/path/to/your-project --dry-run
 python3 install.py install --project /absolute/path/to/your-project
 python3 install.py check --project /absolute/path/to/your-project
 ```
 
-These commands install the reviewed `v0.5.0` source. Omit the checkout to use
+These commands install the reviewed `v0.6.0` source. Omit the checkout to use
 the default branch instead.
 
 Reload your coding agent to discover the files. In the target project, invoke
@@ -318,8 +318,8 @@ Matt Pocock's grilling skills and any Claude SEO installation made with
 version stays the same. The preview shows the fetched commits. The applied
 commits are saved in `.agents/jstack/manifest.json`.
 
-For the first update from an older release, use a reviewed jstack checkout with
-`--refresh-imports` support. Use `main` until a stable tag includes that option.
+Upgrading from an older release also refreshes imports with the plain install
+command used by earlier versions of `/update-skills`.
 
 ```sh
 python3 install.py install --project /absolute/path/to/your-project --refresh-imports --dry-run

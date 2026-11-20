@@ -172,8 +172,9 @@ def validate_release():
     return validate_catalog()
 
 
-def plan(root, imported=()):
-    skills = validate_release()
+def plan(root, imported=(), skills=None):
+    if skills is None:
+        skills = validate_release()
     desired = {}
     for source in sorted((SOURCE / 'skills').rglob('*')):
         if source.is_file() and '__pycache__' not in source.parts and source.suffix != '.pyc':
@@ -333,8 +334,14 @@ def run(args):
                 problems.append(f'{relative}: broken link')
         print(json.dumps({'version': previous.get('version'), 'managed_paths': len(old) + len(seo_old), 'ok': not problems, 'problems': problems}, indent=2))
         return 1 if problems else 0
+    version = None
+    skills = None
     imported = []
-    if args.action == 'install' and (getattr(args, 'refresh_imports', False) or revisions):
+    if args.action == 'install':
+        skills = validate_release()
+        version = (SOURCE / 'VERSION').read_text(encoding='utf-8').strip()
+    upgrading = bool(old) and previous.get('version') != version
+    if args.action == 'install' and (getattr(args, 'refresh_imports', False) or revisions or upgrading):
         with upstream.checkout(upstream.MATT_REPO) as (source, revision):
             imported = list(upstream.matt_files(source))
         print(f'Matt Pocock skills upstream commit: {revision}')
@@ -342,7 +349,7 @@ def run(args):
         seo_old, seo_desired, seo_revision = refresh_seo(root, seo_old)
         if seo_revision:
             revisions['AgriciDaniel/claude-seo'] = seo_revision
-    desired = plan(root, imported) if args.action == 'install' else {}
+    desired = plan(root, imported, skills) if args.action == 'install' else {}
     if seo_desired:
         if set(old | desired) & set(seo_old | seo_desired):
             raise ValueError('Claude SEO overlaps the jstack catalog.')
@@ -397,7 +404,7 @@ def run(args):
             if not config.exists():
                 atomic_write(config, b'{\n  "remote": "origin",\n  "main_branch": "main"\n}\n')
                 config_created = True
-            manifest = {'schema': 1, 'version': (SOURCE / 'VERSION').read_text(encoding='utf-8').strip(),
+            manifest = {'schema': 1, 'version': version,
                         'source': 'https://github.com/joeconstanti/jstack',
                         'files': {k: record(v) for k, v in desired.items()}}
             if revisions:
