@@ -187,7 +187,7 @@ class InstallerTests(unittest.TestCase):
         # Simulate the preceding catalog, then update via the real CLI.
         old_source = Path(self.temp.name) / 'old-source'
         old_source.mkdir()
-        for filename in ('install.py', 'LICENSE', 'VERSION'):
+        for filename in ('install.py', 'upstream.py', 'LICENSE', 'VERSION'):
             shutil.copy2(SOURCE / filename, old_source / filename)
         for folder in ('skills', 'shared'):
             shutil.copytree(SOURCE / folder, old_source / folder)

@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 """Install pinned Claude SEO instructions locally, without installing its runtime."""
 import argparse
-import json
 import os
 from pathlib import Path
 import shutil
@@ -10,9 +9,7 @@ import sys
 import tempfile
 from install import project_root, safe_path
 
-REPO = 'https://github.com/AgriciDaniel/claude-seo.git'
-COMMIT = '6be93f45064ffbadced572b5d5c95f55fd263af0'
-DEST = '.agents/skills/claude-seo'
+from upstream import SEO_REPO as REPO, SEO_PIN as COMMIT, SEO_DEST as DEST, seo_metadata
 
 
 def main():
@@ -95,12 +92,8 @@ def main():
             for doc in stage.rglob('*.md'):
                 text = doc.read_text(encoding='utf-8')
                 doc.write_text(text.replace('${CLAUDE_PLUGIN_ROOT}', DEST), encoding='utf-8')
-            (stage / 'JSTACK-INSTALL.json').write_text(json.dumps({
-                'source': REPO, 'commit': COMMIT, 'license': 'MIT',
-                'modification': 'Markdown plugin-root tokens replaced with project-relative path.',
-                'runtime_setup': False,
-                'aliases': [str(alias.relative_to(root)) for alias, _ in aliases.values()]
-            }, indent=2) + '\n', encoding='utf-8')
+            (stage / 'JSTACK-INSTALL.json').write_bytes(
+                seo_metadata(COMMIT, [str(alias.relative_to(root)) for alias, _ in aliases.values()]))
             stage.rename(destination)
             installed = True
             for alias, target in aliases.values():

@@ -131,6 +131,7 @@ jstack/
 │   └── doctor/scripts/      # Read-only installation diagnostics
 ├── shared/rules.md          # Context, scope, proof and outcome rules all skills read
 ├── install.py               # Project-only install / check / uninstall
+├── upstream.py              # Imported skill sources and payloads
 ├── setup-seo.py             # Optional pinned SEO instructions, no runtime setup
 ├── tests/                   # Installer integration and catalog checks
 ├── docs/
@@ -297,11 +298,12 @@ For example:
 }
 ```
 
-`/grill-with-docs` discovers the existing glossary, context files and ADR layout
+The bundled `/grill-with-docs` discovers the existing glossary, context files and ADR layout
 from project guidance, including `docs/agents/domain.md` when present. It needs
 no setup command. Without an existing convention, it uses `GLOSSARY.md` and
 `docs/adr/`, creating files only when there is an agreed term or decision to record.
-It preserves existing `CONTEXT.md` names and package-specific layouts.
+It preserves existing `CONTEXT.md` names and package-specific layouts. After a
+refresh, this command follows the upstream domain-modeling workflow.
 
 These settings are hints for the agent, not shell commands the installer executes.
 Keep secrets out of this file. Use project guidance for detailed conventions and
@@ -310,17 +312,30 @@ static sites do not need a package.json or a new toolchain.
 
 ### Updates and Removal
 
-Use `/update-skills` to review a tagged release, dry-run its installer and inspect
-the resulting diff. To do it manually, check out a reviewed release in your jstack
-clone and rerun the install command for the target project.
+Use `/update-skills` to preview and apply a project-local update. It fetches
+Matt Pocock's grilling skills and any Claude SEO installation made with
+`setup-seo.py` from their upstream default branches, even when the jstack
+version stays the same. The preview shows the fetched commits. The applied
+commits are saved in `.agents/jstack/manifest.json`.
+
+For the first update from an older release, use a reviewed jstack checkout with
+`--refresh-imports` support. Use `main` until a stable tag includes that option.
 
 ```sh
-python3 install.py install --project /absolute/path/to/your-project --dry-run
-python3 install.py install --project /absolute/path/to/your-project
+python3 install.py install --project /absolute/path/to/your-project --refresh-imports --dry-run
+python3 install.py install --project /absolute/path/to/your-project --refresh-imports
 python3 install.py check --project /absolute/path/to/your-project
 python3 install.py uninstall --project /absolute/path/to/your-project --dry-run
 python3 install.py uninstall --project /absolute/path/to/your-project
 ```
+
+`/grill` keeps its command name and uses upstream `grill-me`. The refresh also
+installs its `grilling` dependency and the `domain-modeling` dependency for
+`/grill-with-docs`. Plain installs use the bundled catalog until the first
+refresh. Subsequent installs refresh those imports again.
+
+Existing standalone SEO installations and Impeccable use their own update
+workflows. The jstack refresh preserves SEO runtime files and setup.
 
 Modified managed files block updates and uninstall so they can be reconciled.
 There is no force-overwrite switch. Project config, reports, unrelated tooling and

@@ -22,7 +22,7 @@ class ValidateCLITests(unittest.TestCase):
     def test_invalid_catalog_is_rejected_by_cli(self):
         with tempfile.TemporaryDirectory() as temp:
             source = Path(temp)
-            for name in ('install.py', 'VERSION', 'LICENSE'):
+            for name in ('install.py', 'upstream.py', 'VERSION', 'LICENSE'):
                 shutil.copy2(helpers.SOURCE / name, source)
             shutil.copytree(helpers.SOURCE / 'shared', source / 'shared')
             shutil.copytree(helpers.SOURCE / 'skills', source / 'skills')
@@ -39,7 +39,7 @@ class ValidateCLITests(unittest.TestCase):
             root = Path(temp)
             source = root / 'release'
             source.mkdir()
-            for name in ('install.py', 'VERSION', 'LICENSE'):
+            for name in ('install.py', 'upstream.py', 'VERSION', 'LICENSE'):
                 shutil.copy2(helpers.SOURCE / name, source)
             shutil.copytree(helpers.SOURCE / 'shared', source / 'shared')
             (source / 'skills').mkdir()
@@ -61,6 +61,7 @@ class ValidateCLITests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as temp:
             source = Path(temp)
             shutil.copy2(helpers.SOURCE / 'install.py', source)
+            shutil.copy2(helpers.SOURCE / 'upstream.py', source)
             for name in ('VERSION', 'LICENSE'):
                 shutil.copy2(helpers.SOURCE / name, source)
             shutil.copytree(helpers.SOURCE / 'skills', source / 'skills')
